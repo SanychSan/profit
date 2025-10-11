@@ -1,0 +1,8 @@
+{
+  "name": "ion-cp-a-cp_dashboard",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular",
+  "id": "1ea2a0b1"
+}
