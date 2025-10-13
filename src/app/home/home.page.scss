@@ -1,0 +1,15 @@
+@use '@angular/material' as mat;
+
+:host {
+  @include mat.table-overrides(
+    (
+      header-headline-color: var(--ion-text-color),
+      row-item-label-text-color: var(--ion-text-color),
+      row-item-outline-color: var(--ion-text-color)
+    )
+  );
+}
+
+table {
+  width: 100%;
+}

@@ -2,17 +2,18 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { IonicModule, Platform } from '@ionic/angular';
-import { DataService, Message } from '../services/data.service';
+import { SpotService } from '../services/spot.service';
+import { Coin } from 'src/app/types/coin.type';
 
 @Component({
-  selector: 'app-view-message',
-  templateUrl: './view-message.page.html',
-  styleUrls: ['./view-message.page.scss'],
+  selector: 'app-view-coin',
+  templateUrl: './view-coin.page.html',
+  styleUrls: ['./view-coin.page.scss'],
   standalone: false,
 })
-export class ViewMessagePage implements OnInit {
-  public message!: Message;
-  private data = inject(DataService);
+export class ViewCoinPage implements OnInit {
+  public coin!: Coin;
+  private spotService = inject(SpotService);
   private activatedRoute = inject(ActivatedRoute);
   private platform = inject(Platform);
 
@@ -20,7 +21,7 @@ export class ViewMessagePage implements OnInit {
 
   ngOnInit() {
     const id = this.activatedRoute.snapshot.paramMap.get('id') as string;
-    this.message = this.data.getMessageById(parseInt(id, 10));
+    // this.coin = this.spotService.getCoinByName(parseInt(id, 10));
   }
 
   getBackButtonText() {

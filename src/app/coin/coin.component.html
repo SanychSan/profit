@@ -1,0 +1,10 @@
+@if (coin) {
+<ion-item [routerLink]="'/coin/' + coin.name" [detail]="false">
+  <ion-label class="ion-text-wrap">
+    <h2>
+      {{ coin.name }}
+    </h2>
+    <h3>{{ coin.qty }}</h3>
+  </ion-label>
+</ion-item>
+}

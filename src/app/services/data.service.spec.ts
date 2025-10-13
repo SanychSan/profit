@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { DataService } from './data.service';
+import { SpotService } from './spot.service';
 
 describe('DataService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: DataService = TestBed.inject(DataService);
+    const service: SpotService = TestBed.inject(SpotService);
     expect(service).toBeTruthy();
   });
 });

@@ -2,20 +2,20 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 
-import { ViewMessagePageRoutingModule } from './view-message-routing.module';
-import { ViewMessagePage } from './view-message.page';
+import { ViewCoinPageRoutingModule } from './view-coin-routing.module';
+import { ViewCoinPage } from './view-coin.page';
 
 describe('ViewMessagePage', () => {
-  let component: ViewMessagePage;
-  let fixture: ComponentFixture<ViewMessagePage>;
+  let component: ViewCoinPage;
+  let fixture: ComponentFixture<ViewCoinPage>;
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
-      declarations: [ViewMessagePage],
-      imports: [IonicModule.forRoot(), ViewMessagePageRoutingModule, RouterModule.forRoot([])]
+      declarations: [ViewCoinPage],
+      imports: [IonicModule.forRoot(), ViewCoinPageRoutingModule, RouterModule.forRoot([])]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ViewMessagePage);
+    fixture = TestBed.createComponent(ViewCoinPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
