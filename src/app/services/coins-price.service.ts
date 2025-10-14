@@ -1,7 +1,8 @@
 import { Injectable, DestroyRef, inject, effect, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { catchError, of, retry } from 'rxjs';
+import { catchError, of, retry, throwError } from 'rxjs';
 
+import { hmacSHA256 } from 'src/utils/hmac-sha-256';
 import { SimplePrice } from 'src/app/types/simple-price.type';
 
 interface PriceEntry {
@@ -41,19 +42,47 @@ export class CoinsPriceService {
 
   coins = signal<SimplePrice>({});
   error = signal<string | null>(null);
-  refreshMs = signal<number>(150_000);
+  refreshMs = signal<number>(1_500_000);
 
   constructor() {
     effect(
       onCleanup => {
         const interval = this.refreshMs();
         this.refresh();
+        // this.testAPI();
 
         const handle = setInterval(() => this.refresh(), interval);
         onCleanup(() => clearInterval(handle));
       },
       { injector: this.destroyRef as any }
     );
+  }
+
+  private async testAPI() {
+    const url = `${this.baseUrl}/account/wallet-balance`;
+
+    const timestamp = Date.now().toString();
+    const api_key = 'lw2IeA0cdwfVqoNJOp';
+    const recv_window = '5000';
+    const sign = timestamp + api_key + recv_window;
+    const sig = await hmacSHA256(sign);
+
+    this.http
+      .get(url, {
+        headers: {
+          'X-BAPI-API-KEY': api_key,
+          'X-BAPI-TIMESTAMP': timestamp,
+          'X-BAPI-RECV-WINDOW': recv_window,
+          'X-BAPI-SIGN': sig
+        }
+      })
+      .pipe(
+        catchError(err => {
+          console.error('testAPI', err);
+          return throwError(() => err);
+        })
+      )
+      .subscribe(res => console.log('testAPI', res));
   }
 
   private refresh() {

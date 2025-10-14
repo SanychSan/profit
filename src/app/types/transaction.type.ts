@@ -1,27 +1,32 @@
 type OrderType = 'LIMIT' | 'MARKET' | 'STOP' | 'STOP_LIMIT';
 type Direction = 'BUY' | 'SELL';
-type OrderStatus =
-  | 'NEW'
-  | 'PARTIALLY_FILLED'
-  | 'FILLED'
-  | 'CANCELED'
-  | 'PENDING_CANCEL'
-  | 'REJECTED'
-  | 'EXPIRED';
+
+export interface TransactionRaw {
+  'Spot Pairs': string;
+  'Order Type': OrderType;
+  Direction: Direction;
+  feeCoin: string;
+  ExecFeeV2: string|number;
+  'Filled Value': number;
+  'Filled Price': number;
+  'Filled Quantity': number;
+  Fees: number;
+  'Transaction ID': number;
+  'Order No.': string | number;
+  'Timestamp (UTC)': string;
+}
 
 export interface Transaction {
-  spotPair: string;
+  SpotPairs: string;
+  OrderType: OrderType;
+  Direction: Direction;
   feeCoin: string;
-  execFeeV2: number;
-  feeInfo: Record<string, any>;
-  orderType: OrderType;
-  direction: Direction;
-  filledValue: number;
-  avgFilledPrice: number;
-  orderPrice: number;
-  orderQuantity: number;
-  orderValue: number;
-  orderStatus: OrderStatus;
-  orderNo: string;
-  timestamp: string;
+  ExecFeeV2: number;
+  FilledValue: number;
+  FilledPrice: number;
+  FilledQuantity: number;
+  Fees: number;
+  TransactionID: number;
+  OrderNo: number;
+  Timestamp: string;
 }

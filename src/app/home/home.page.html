@@ -16,35 +16,48 @@
   </ion-header>
 
   <table mat-table [dataSource]="spotSource" matSort>
-    <ng-container matColumnDef="feeCoin">
+    <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Coin</th>
-      <td mat-cell *matCellDef="let r">{{ r.feeCoin }}</td>
+      <td mat-cell *matCellDef="let r">{{ r.name }}</td>
     </ng-container>
 
-    <ng-container matColumnDef="filledValue">
+    <ng-container matColumnDef="qty">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Qty</th>
-      <td mat-cell *matCellDef="let r">{{ r.filledValue | number }}</td>
+      <td mat-cell *matCellDef="let r">
+        {{ r.qty }}<br />
+        {{ (r.qty * r.curPrice) | currency:'USD':'symbol':'1.2-2' }}
+      </td>
     </ng-container>
 
-    <ng-container matColumnDef="avgFilledPrice">
+    <ng-container matColumnDef="buyPrice">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Price</th>
       <td mat-cell *matCellDef="let r">
-        {{ r.avgFilledPrice | number }}<br />
-        curPrice
+        {{ r.curPrice | number }}<br />
+        {{ r.buyPrice | number }}
       </td>
     </ng-container>
 
-    <ng-container matColumnDef="profit">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Profit</th>
-      <td mat-cell *matCellDef="let r">
-        curValue<br />
-        curValue %
+    <ng-container matColumnDef="lastBuyProfit">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Last Buy Profit</th>
+      <td
+        mat-cell
+        *matCellDef="let r"
+        [ngClass]="{'profit-positive': r.lastProfit >= 0, 'profit-negative': r.lastProfit < 0}"
+      >
+        {{ r.lastProfit | currency:'USD':'symbol':'1.2-2' }}<br />
+        {{ 100 * (r.curPrice - r.buyPrice) / r.buyPrice | number:'1.2-2' }} %
       </td>
     </ng-container>
 
-    <ng-container matColumnDef="timestamp">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
-      <td mat-cell *matCellDef="let r">{{ r.timestamp | date:'short' }}</td>
+    <ng-container matColumnDef="generalProfit">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>General Profit</th>
+      <td
+        mat-cell
+        *matCellDef="let r"
+        [ngClass]="{'profit-positive': r.profit >= 0, 'profit-negative': r.profit < 0}"
+      >
+        {{ r.profit | currency:'USD':'symbol':'1.2-2' }}
+      </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

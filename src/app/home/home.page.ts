@@ -1,4 +1,12 @@
-import { Component, inject, ViewChild, effect, DestroyRef } from '@angular/core';
+import {
+  Component,
+  inject,
+  ViewChild,
+  effect,
+  AfterViewInit,
+  OnDestroy,
+  EffectRef
+} from '@angular/core';
 import { RefresherCustomEvent } from '@ionic/angular';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
@@ -12,26 +20,40 @@ import { Coin } from 'src/app/types/coin.type';
   styleUrls: ['home.page.scss'],
   standalone: false
 })
-export class HomePage {
+export class HomePage implements AfterViewInit, OnDestroy {
   private spotService = inject(SpotService);
-  private destroyRef = inject(DestroyRef);
+  private destroyRef: EffectRef;
 
-  displayedColumns = ['feeCoin', 'profit', 'filledValue', 'avgFilledPrice', 'timestamp'];
+  displayedColumns = ['name', 'qty', 'buyPrice', 'lastBuyProfit', 'generalProfit'];
+
   spotSource = new MatTableDataSource<Coin>([]);
 
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor() {
-    effect(
-      () => {
-        this.spotSource.data = this.spotService.coins();
-      },
-      { injector: this.destroyRef as any }
-    );
+    this.destroyRef = effect(() => {
+      const coins = this.spotService.coins();
+      console.log('HomePage coins', coins);
+      this.spotSource.data = coins.map(
+        c =>
+          ({
+            name: c.id,
+            qty: c.qty,
+            buyPrice: c.avgPrice,
+            curPrice: c.marketPrice,
+            profit: c.profit,
+            lastProfit: c.lastProfit
+          } as Coin)
+      );
+    });
   }
 
   ngAfterViewInit() {
     this.spotSource.sort = this.sort;
+  }
+
+  ngOnDestroy(): void {
+    this.destroyRef.destroy();
   }
 
   refresh(ev: any) {

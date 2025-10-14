@@ -4,5 +4,5 @@ export interface Coin {
   buyPrice: number;
   curPrice: number;
   profit: number;
-  profitPerc: number;
+  lastProfit: number;
 }

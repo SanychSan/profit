@@ -5,11 +5,21 @@
     (
       header-headline-color: var(--ion-text-color),
       row-item-label-text-color: var(--ion-text-color),
-      row-item-outline-color: var(--ion-text-color)
+      row-item-outline-color: var(--ion-text-color),
+      header-headline-size: 18px,
+      row-item-label-text-size: 18px,
+      row-item-label-text-line-height: 30px,
+      background-color: rgb(39 39 42)
     )
   );
 }
 
 table {
   width: 100%;
+}
+.profit-positive {
+  color: rgb(34 197 94);
+}
+.profit-negative {
+  color: rgb(239 68 68);
 }

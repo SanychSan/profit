@@ -2,7 +2,8 @@ import { Injectable, WritableSignal, signal, inject, effect, DestroyRef } from '
 
 import { CoinsPriceService } from './coins-price.service';
 import { TransactionsService } from './transactions.service';
-import { Coin } from 'src/app/types/coin.type';
+import { Transaction } from 'src/app/types/transaction.type';
+import { Coin } from 'src/utils/coin';
 
 @Injectable({
   providedIn: 'root'
@@ -16,17 +17,35 @@ export class SpotService {
   constructor() {
     effect(
       () => {
-        const transaction = this.transactionsService.spot();
+        const transactions: Transaction[] = this.transactionsService.spot();
         const coinsPrice = this.coinsPriceService.coins();
-        const tt = transaction.map(tx => ({
-          ...tx,
-          profit: +(tx.filledValue * (coinsPrice[tx.feeCoin] || 0) - tx.execFeeV2).toFixed(2)
-        }));
 
-        console.log('tt', tt);
+        if (transactions.length === 0 || Object.keys(coinsPrice).length === 0) {
+          return;
+        }
 
-        const coins = [] as Coin[];
-        this.coins.set(coins);
+        // console.log('coinsPrice', coinsPrice);
+        // console.log('transactions', transactions);
+
+        const sortedTransactions = [...transactions].sort(
+          (a, b) => new Date(a.Timestamp).getTime() - new Date(b.Timestamp).getTime()
+        );
+
+        const coins: Coin[] = [];
+        for (const tx of sortedTransactions) {
+          const coinId = tx.SpotPairs.replace('USDT', '');
+          const coin = coins.find(c => c.id === coinId);
+          if (coin) {
+            coin.addTransaction(tx);
+          } else {
+            const newCoin = new Coin(coinId, coinsPrice[coinId]);
+            newCoin.addTransaction(tx);
+            coins.push(newCoin);
+          }
+        }
+
+        // this.coins.set(coins.filter(c => (c.qty * c.marketPrice) > 0.05));
+        this.coins.set(coins.filter(c => c.qty > 0));
       },
       { injector: inject(DestroyRef) as any }
     );
