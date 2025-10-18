@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { catchError, of, retry } from 'rxjs';
 
 import { SimplePrice } from 'src/app/types/simple-price.type';
+import { ServiceState } from 'src/app/types/service-state.type';
 
 interface PriceEntry {
   ask1Price: string;
@@ -39,11 +40,22 @@ export class CoinsPriceService {
   private destroyRef = inject(DestroyRef);
   private baseUrl = 'https://api.bybit.com/v5';
 
-  coins = signal<SimplePrice>({});
-  error = signal<string | null>(null);
+  coins = signal<SimplePrice | null>(null);
   refreshMs = signal<number>(5 * 60 * 1000); // 5 minutes
 
+  public readonly state = signal<ServiceState>({
+    init: false,
+    loading: false,
+    ready: false,
+    error: null
+  });
+
   constructor() {
+    this.state.update(state => ({
+      ...state,
+      init: true
+    }));
+
     effect(
       onCleanup => {
         const interval = this.refreshMs();
@@ -59,20 +71,35 @@ export class CoinsPriceService {
   private refresh() {
     const url = `${this.baseUrl}/market/tickers?category=spot`;
 
+    this.state.update(state => ({
+      ...state,
+      loading: true
+    }));
+
     this.http
       .get<ApiResponse>(url)
       .pipe(
         retry({ count: 2, delay: 500 }),
         catchError(err => {
           console.error('prices error', err);
-          this.error.set(err?.message ?? 'Failed to load prices');
-          return of(null as ApiResponse | null);
+          return of({ retMsg: err?.message ?? 'Failed to load prices' } as ApiResponse | null);
         })
       )
       .subscribe(data => {
         if (data?.retMsg === 'OK' && data.result) {
           this.coins.set(this.transformData(data.result.list));
-          this.error.set(null);
+          this.state.update(state => ({
+            ...state,
+            loading: false,
+            ready: true,
+            error: null
+          }));
+        } else {
+          this.state.update(state => ({
+            ...state,
+            loading: false,
+            error: data?.retMsg || 'Failed to load prices'
+          }));
         }
       });
   }

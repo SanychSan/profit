@@ -36,6 +36,7 @@
   </ion-header>
 
   <table
+    class="spot-table"
     mat-table
     [dataSource]="spotSource"
     matSort
@@ -96,12 +97,16 @@
 
   @if(!spotSource.data.length) {
   <div class="no-data">
+    @if(isLoading()) {
+    <ion-spinner color="secondary"></ion-spinner>
+    } @else {
     <p>No data available. Please upload a CSV file.</p>
+    }
   </div>
   }
 
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-    <ion-fab-button (click)="openFilePicker()">
+    <ion-fab-button (click)="openFilePicker()" [disabled]="isLoading()">
       <ion-icon name="document-outline"></ion-icon>
     </ion-fab-button>
     <span class="fab-label txt-gray ion-text-nowrap">Upload a CSV file</span>

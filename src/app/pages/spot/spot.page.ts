@@ -33,12 +33,14 @@ export class SpotPage implements AfterViewInit, OnDestroy {
   private destroyRef: EffectRef;
 
   @ViewChild('fileInput', { static: false }) fileInput!: ElementRef<HTMLInputElement>;
+  @ViewChild(MatSort) sort!: MatSort;
 
   displayedColumns = ['currency', 'equity', 'profit', 'price', 'totalProfit'];
-
-  spotSource = new MatTableDataSource<Coin>([]);
-
-  @ViewChild(MatSort) sort!: MatSort;
+  spotSource = new MatTableDataSource<Coin>();
+  isLoading = computed(() => {
+    const spotServiceState = this.spotService.state();
+    return !spotServiceState.ready && spotServiceState.loading;
+  });
 
   totalSpotProfit = computed(() => {
     const coins = this.spotService.coins();
@@ -46,6 +48,7 @@ export class SpotPage implements AfterViewInit, OnDestroy {
   });
 
   constructor() {
+    console.log('SpotPage initialized', this.spotSource.data);
     this.spotSource.sortingDataAccessor = (item: Coin, property: string) => {
       switch (property) {
         case 'equity':

@@ -9,13 +9,14 @@
       header-headline-size: 20px,
       row-item-label-text-size: 20px,
       row-item-label-text-line-height: 26px,
-      background-color: rgb(39 39 42)
+      background-color: var(--ion-background-color)
     )
   );
 }
 
-table {
+.spot-table {
   width: 100%;
+  margin-bottom: 80px;
 }
 .profit-positive {
   color: #22c55e;
@@ -42,4 +43,7 @@ table {
   top: 50%;
   right: calc(100% + 16px);
   transform: translateY(-50%);
+  background-color: rgb(39 39 42/0.6);
+  border-radius: 50px;
+  padding: 5px 10px;
 }

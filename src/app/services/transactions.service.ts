@@ -60,9 +60,10 @@ export class TransactionsService {
     // });
 
     // Load stored data
-    await new Promise(resolve => setTimeout(resolve, 20000)); // simulate delay
-    const data = await this.storageService.get<TransactionRaw[]>(this.STORAGE_KEY);
-    this.rawData.set(data || []);
+    try {
+      const data = await this.storageService.get<TransactionRaw[]>(this.STORAGE_KEY);
+      this.rawData.set(data || []);
+    } catch (error) {}
   }
 
   public async addTransactions(data: TransactionRaw[]): Promise<void> {
