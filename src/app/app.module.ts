@@ -17,10 +17,10 @@ import { AppRoutingModule } from './app-routing.module';
   imports: [
     BrowserModule,
     IonicModule.forRoot(),
+    AppRoutingModule,
     IonicStorageModule.forRoot({
       name: '__myappdb'
-    }),
-    AppRoutingModule
+    })
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

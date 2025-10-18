@@ -6,20 +6,20 @@ import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
 
-import { HomePage } from './home.page';
-import { HomePageRoutingModule } from './home-routing.module';
-import { CoinComponentModule } from '../coin/coin.module';
+import { SpotPage } from './spot.page';
+import { SpotPageRoutingModule } from './spot-routing.module';
+// import { CoinComponentModule } from 'src/app/components/coin/coin.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    CoinComponentModule,
-    HomePageRoutingModule,
+    // CoinComponentModule,
+    SpotPageRoutingModule,
     MatTableModule,
     MatSortModule
   ],
-  declarations: [HomePage]
+  declarations: [SpotPage]
 })
-export class HomePageModule {}
+export class SpotPageModule {}

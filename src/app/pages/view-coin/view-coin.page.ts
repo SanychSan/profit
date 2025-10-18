@@ -2,7 +2,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { IonicModule, Platform } from '@ionic/angular';
-import { SpotService } from '../services/spot.service';
+import { SpotService } from 'src/app/services/spot.service';
 import { Coin } from 'src/app/types/coin.type';
 
 @Component({

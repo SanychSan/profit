@@ -60,6 +60,7 @@ export class TransactionsService {
     // });
 
     // Load stored data
+    await new Promise(resolve => setTimeout(resolve, 20000)); // simulate delay
     const data = await this.storageService.get<TransactionRaw[]>(this.STORAGE_KEY);
     this.rawData.set(data || []);
   }

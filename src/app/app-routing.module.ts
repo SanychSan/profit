@@ -3,17 +3,16 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   {
-    path: 'home',
-    loadChildren: () => import('./home/home.module').then(m => m.HomePageModule)
+    path: 'spot',
+    loadChildren: () => import('./pages/spot/spot.module').then(m => m.SpotPageModule)
   },
   {
     path: 'coin/:id',
-    loadChildren: () =>
-      import('./view-coin/view-coin.module').then(m => m.ViewCoinPageModule)
+    loadChildren: () => import('./pages/view-coin/view-coin.module').then(m => m.ViewCoinPageModule)
   },
   {
     path: '',
-    redirectTo: 'home',
+    redirectTo: 'spot',
     pathMatch: 'full'
   }
 ];

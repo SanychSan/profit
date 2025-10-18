@@ -20,12 +20,12 @@ import { CoinsIconsService } from 'src/app/services/coins-icons.service';
 import { Coin } from 'src/app/types/coin.type';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: 'home.page.html',
-  styleUrls: ['home.page.scss'],
+  selector: 'app-spot',
+  templateUrl: 'spot.page.html',
+  styleUrls: ['spot.page.scss'],
   standalone: false
 })
-export class HomePage implements AfterViewInit, OnDestroy {
+export class SpotPage implements AfterViewInit, OnDestroy {
   private papa = inject(Papa);
   private spotService = inject(SpotService);
   private transactionsService = inject(TransactionsService);
@@ -60,7 +60,7 @@ export class HomePage implements AfterViewInit, OnDestroy {
     };
     this.destroyRef = effect(() => {
       const coins = this.spotService.coins();
-      console.log('HomePage coins', coins);
+      console.log('SpotPage coins', coins);
       this.spotSource.data = coins.map(
         c =>
           ({
