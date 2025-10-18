@@ -24,9 +24,6 @@ export class SpotService {
           return;
         }
 
-        // console.log('coinsPrice', coinsPrice);
-        // console.log('transactions', transactions);
-
         const sortedTransactions = [...transactions].sort(
           (a, b) => new Date(a.Timestamp).getTime() - new Date(b.Timestamp).getTime()
         );
@@ -44,8 +41,7 @@ export class SpotService {
           }
         }
 
-        // this.coins.set(coins.filter(c => (c.qty * c.marketPrice) > 0.05));
-        this.coins.set(coins.filter(c => c.qty > 0));
+        this.coins.set(coins);
       },
       { injector: inject(DestroyRef) as any }
     );

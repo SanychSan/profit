@@ -1,8 +1,10 @@
 export interface Coin {
   name: string;
-  qty: number;
+  totalCoins: number;
+  totalValue: number;
   buyPrice: number;
   curPrice: number;
   profit: number;
-  lastProfit: number;
+  prcProfit: number;
+  totalProfit: number;
 }

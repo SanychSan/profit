@@ -6,13 +6,13 @@ export interface TransactionRaw {
   'Order Type': OrderType;
   Direction: Direction;
   feeCoin: string;
-  ExecFeeV2: string|number;
+  ExecFeeV2: string | number;
   'Filled Value': number;
   'Filled Price': number;
   'Filled Quantity': number;
   Fees: number;
-  'Transaction ID': number;
-  'Order No.': string | number;
+  'Transaction ID': number | string;
+  'Order No.': number | string;
   'Timestamp (UTC)': string;
 }
 
@@ -21,12 +21,12 @@ export interface Transaction {
   OrderType: OrderType;
   Direction: Direction;
   feeCoin: string;
-  ExecFeeV2: number;
+  ExecFeeV2: string | number;
   FilledValue: number;
   FilledPrice: number;
   FilledQuantity: number;
   Fees: number;
-  TransactionID: number;
-  OrderNo: number;
+  TransactionID: string;
+  OrderNo: string;
   Timestamp: string;
 }

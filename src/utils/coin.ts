@@ -6,9 +6,14 @@ const { Big } = BIG;
 export class Coin {
   readonly id: string;
 
-  #qty = 0;
-  get qty() {
-    return this.#qty;
+  #totalCoins = 0;
+  get totalCoins() {
+    return this.#totalCoins;
+  }
+
+  #totalInvested = 0;
+  get totalInvested() {
+    return this.#totalInvested;
   }
 
   #avgPrice = 0;
@@ -16,19 +21,15 @@ export class Coin {
     return this.#avgPrice;
   }
 
-  #fixedProfit = 0;
-  get fixedProfit() {
-    return this.#fixedProfit;
-  }
-
   #profit = 0;
   get profit() {
     return this.#profit;
   }
 
-  #lastProfit = 0;
-  get lastProfit() {
-    return this.#lastProfit;
+  #totalProfit = 0;
+  get totalProfit() {
+    const currentValue = new Big(this.#marketPrice).times(this.#totalCoins);
+    return new Big(this.#totalProfit).plus(currentValue).toNumber();
   }
 
   #marketPrice = 0;
@@ -54,33 +55,43 @@ export class Coin {
       const realQty = new Big(tx.FilledQuantity).minus(tx.Fees).toNumber();
 
       this.#avgPrice = new Big(this.#avgPrice)
-        .times(this.#qty)
-        .plus(new Big(tx.FilledPrice).times(realQty))
-        .div(new Big(this.#qty).plus(realQty))
+        .times(this.#totalCoins)
+        .plus(tx.FilledValue)
+        .div(new Big(this.#totalCoins).plus(realQty))
         .toNumber();
 
-      this.#lastProfit = new Big(this.#marketPrice).minus(this.#avgPrice).times(realQty).toNumber();
-      this.#qty = new Big(this.#qty).plus(realQty).toNumber();
+      this.#totalInvested = new Big(this.#totalInvested).plus(tx.FilledValue).toNumber();
+      this.#totalCoins = new Big(this.#totalCoins).plus(realQty).toNumber();
+
+      this.#totalProfit = new Big(this.#totalProfit).minus(tx.FilledValue).toNumber();
     }
 
     if (tx.Direction === 'SELL') {
-      this.#qty = new Big(this.#qty).minus(tx.FilledQuantity).toNumber();
-      if (this.#qty < 0) {
-        this.#qty = 0;
+      this.#totalCoins = new Big(this.#totalCoins).minus(tx.FilledQuantity).toNumber();
+
+      if (this.#totalCoins < 0) {
+        this.#totalCoins = 0;
       }
 
-      const realCost = new Big(tx.FilledValue).minus(tx.Fees).toNumber();
-      this.#fixedProfit = new Big(this.#fixedProfit)
-        .plus(new Big(realCost).minus(new Big(this.#avgPrice).times(tx.FilledQuantity)))
+      this.#totalInvested = new Big(this.#totalInvested)
+        .minus(tx.FilledValue)
+        .minus(tx.Fees)
         .toNumber();
+
+      this.#totalProfit = new Big(this.#totalProfit).plus(tx.FilledValue).minus(tx.Fees).toNumber();
     }
 
     this.#profit = this.#calcProfit();
   }
 
-  #calcProfit() {
-    return new Big(this.#fixedProfit)
-      .plus(new Big(this.#qty).times(new Big(this.#marketPrice).minus(this.#avgPrice)))
-      .toNumber();
+  #calcProfit(): number {
+    if (this.#totalCoins === 0) {
+      return 0;
+    }
+
+    const currentValue = new Big(this.#marketPrice).times(this.#totalCoins);
+    const investedValue = new Big(this.#avgPrice).times(this.#totalCoins);
+
+    return currentValue.minus(investedValue).toNumber();
   }
 }
