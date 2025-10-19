@@ -1,0 +1,62 @@
+<table
+  class="spot-table"
+  mat-table
+  [dataSource]="spotSource"
+  matSort
+  matSortActive="equity"
+  matSortDirection="desc"
+  matSortDisableClear="true"
+  [attr.hidden]="!spotSource.data.length ? true : null"
+>
+  <ng-container matColumnDef="currency">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Currency</th>
+    <td mat-cell *matCellDef="let r">{{ r.name }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="equity">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Equity</th>
+    <td mat-cell *matCellDef="let r">
+      {{ r.totalCoins }}<br />
+      <small class="txt-gray"> {{ r.totalValue | currency : 'USD' : 'symbol' : '1.2-2' }} </small>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="price">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Price</th>
+    <td mat-cell *matCellDef="let r">
+      <small class="txt-gray txt-mono">cur</small>
+      {{ r.curPrice | currency : 'USD' : 'symbol' : '1.2-2' }}<br />
+      <small class="txt-gray txt-mono">buy</small>
+      {{ r.buyPrice | currency : 'USD' : 'symbol' : '1.2-2' }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="profit">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Profit</th>
+    <td
+      mat-cell
+      *matCellDef="let r"
+      [ngClass]="{ 'txt-color-positive': r.profit > 0, 'txt-color-negative': r.profit < 0 }"
+    >
+      {{ r.profit | currency : 'USD' : 'symbol' : '1.2-2' }}<br />
+      <small>{{ r.prcProfit | number : '1.2-2' }}%</small>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="totalProfit">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Total Profit</th>
+    <td
+      mat-cell
+      *matCellDef="let r"
+      [ngClass]="{
+        'txt-color-positive': r.totalProfit > 0,
+        'txt-color-negative': r.totalProfit < 0
+      }"
+    >
+      {{ r.totalProfit | currency : 'USD' : 'symbol' : '1.2-2' }}
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+</table>

@@ -73,12 +73,22 @@ export class TransactionsService {
     );
 
     const result = [...storedData, ...newData].sort((a, b) => {
-      const t1 = new Date(a['Timestamp (UTC)']).getTime();
-      const t2 = new Date(b['Timestamp (UTC)']).getTime();
-      return t2 - t1;
+      // const t1 = new Date(a['Timestamp (UTC)']).getTime();
+      // const t2 = new Date(b['Timestamp (UTC)']).getTime();
+      // return t2 - t1;
+      const t1 = `${a['Transaction ID']}`;
+      const t2 = `${b['Transaction ID']}`;
+      if (t1 < t2) return -1;
+      if (t1 > t2) return 1;
+      return 0;
     });
 
     await this.storageService.set(this.STORAGE_KEY, result);
     this.rawData.set(result);
+  }
+
+  public async removeAllData(): Promise<void> {
+    await this.storageService.remove(this.STORAGE_KEY);
+    this.rawData.set([]);
   }
 }

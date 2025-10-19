@@ -1,35 +1,3 @@
-@use '@angular/material' as mat;
-
-:host {
-  @include mat.table-overrides(
-    (
-      header-headline-color: var(--ion-text-color),
-      row-item-label-text-color: var(--ion-text-color),
-      row-item-outline-color: var(--ion-text-color),
-      header-headline-size: 20px,
-      row-item-label-text-size: 20px,
-      row-item-label-text-line-height: 26px,
-      background-color: var(--ion-background-color)
-    )
-  );
-}
-
-.spot-table {
-  width: 100%;
-  margin-bottom: 80px;
-}
-.profit-positive {
-  color: #22c55e;
-}
-.profit-negative {
-  color: #ef4444;
-}
-.txt-gray {
-  color: gray;
-}
-.txt-mono {
-  font-family: monospace;
-}
 .no-data {
   display: flex;
   flex-direction: column;
@@ -38,12 +6,7 @@
   padding: 20px;
   height: 100%;
 }
-.fab-label {
-  position: absolute;
-  top: 50%;
-  right: calc(100% + 16px);
-  transform: translateY(-50%);
-  background-color: rgb(39 39 42/0.6);
-  border-radius: 50px;
-  padding: 5px 10px;
+
+#present-alert[hidden] {
+  display: none !important;
 }

@@ -40,16 +40,12 @@ export class SpotService {
         const transactions: Transaction[] = this.transactionsService.spot();
         const coinsPrice = this.coinsPriceService.coins();
 
-        if (transactions.length === 0 || !coinsPrice || Object.keys(coinsPrice).length === 0) {
+        if (!coinsPrice || Object.keys(coinsPrice).length === 0) {
           return;
         }
 
-        const sortedTransactions = [...transactions].sort(
-          (a, b) => new Date(a.Timestamp).getTime() - new Date(b.Timestamp).getTime()
-        );
-
         const coins: Coin[] = [];
-        for (const tx of sortedTransactions) {
+        for (const tx of transactions) {
           const coinId = tx.SpotPairs.replace('USDT', '');
           const coin = coins.find(c => c.id === coinId);
           if (coin) {

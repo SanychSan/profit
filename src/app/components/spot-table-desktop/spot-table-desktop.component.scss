@@ -1,0 +1,38 @@
+@use '@angular/material' as mat;
+
+:host {
+  @include mat.table-overrides(
+    (
+      header-headline-color: var(--ion-text-color),
+      row-item-label-text-color: var(--ion-text-color),
+      row-item-outline-color: var(--ion-text-color),
+      header-headline-size: 20px,
+      row-item-label-text-size: 20px,
+      row-item-label-text-line-height: 26px,
+      background-color: var(--ion-background-color)
+    )
+  );
+}
+
+.spot-table {
+  width: 100%;
+  margin-bottom: 80px;
+
+  .mat-mdc-header-row {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .mdc-data-table__cell,
+  .mdc-data-table__header-cell {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+}
+.txt-gray {
+  color: gray;
+}
+.txt-mono {
+  font-family: monospace;
+}

@@ -40,3 +40,9 @@
 body {
   --ion-background-color: #27272a;
 }
+.txt-color-positive {
+  color: var(--ion-color-success-tint);
+}
+.txt-color-negative {
+  color: var(--ion-color-danger-tint);
+}

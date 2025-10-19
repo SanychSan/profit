@@ -2,22 +2,18 @@ import {
   Component,
   inject,
   ViewChild,
-  effect,
   AfterViewInit,
-  OnDestroy,
-  EffectRef,
   ElementRef,
   computed
 } from '@angular/core';
 import { RefresherCustomEvent } from '@ionic/angular';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatSort } from '@angular/material/sort';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { map, shareReplay } from 'rxjs/operators';
 import { Papa } from 'ngx-papaparse';
 
 import { SpotService } from 'src/app/services/spot.service';
 import { TransactionsService } from 'src/app/services/transactions.service';
 import { CoinsIconsService } from 'src/app/services/coins-icons.service';
-import { Coin } from 'src/app/types/coin.type';
 
 @Component({
   selector: 'app-spot',
@@ -25,21 +21,28 @@ import { Coin } from 'src/app/types/coin.type';
   styleUrls: ['spot.page.scss'],
   standalone: false
 })
-export class SpotPage implements AfterViewInit, OnDestroy {
+export class SpotPage implements AfterViewInit {
   private papa = inject(Papa);
   private spotService = inject(SpotService);
   private transactionsService = inject(TransactionsService);
   private coinsIconsService = inject(CoinsIconsService);
-  private destroyRef: EffectRef;
+  private bo = inject(BreakpointObserver);
 
   @ViewChild('fileInput', { static: false }) fileInput!: ElementRef<HTMLInputElement>;
-  @ViewChild(MatSort) sort!: MatSort;
 
-  displayedColumns = ['currency', 'equity', 'profit', 'price', 'totalProfit'];
-  spotSource = new MatTableDataSource<Coin>();
+  isHandset$ = this.bo.observe(['(max-width: 767px)'])
+    .pipe(
+      map(state => state.matches),
+      shareReplay({ refCount: true, bufferSize: 1 })
+    );
+
   isLoading = computed(() => {
     const spotServiceState = this.spotService.state();
     return !spotServiceState.ready && spotServiceState.loading;
+  });
+
+  coins = computed(() => {
+    return this.spotService.coins();
   });
 
   totalSpotProfit = computed(() => {
@@ -47,47 +50,22 @@ export class SpotPage implements AfterViewInit, OnDestroy {
     return coins.reduce((sum, c) => sum + (c.totalProfit || 0), 0);
   });
 
-  constructor() {
-    console.log('SpotPage initialized', this.spotSource.data);
-    this.spotSource.sortingDataAccessor = (item: Coin, property: string) => {
-      switch (property) {
-        case 'equity':
-          return item.totalValue ?? 0;
-        case 'price':
-          return item.buyPrice ?? 0;
-        case 'totalProfit':
-          return item.totalProfit ?? 0;
-        default:
-          return (item as any)[property];
+  public alertButtons = [
+    {
+      text: 'Cancel',
+      role: 'cancel'
+    },
+    {
+      text: 'Yes, delete all',
+      role: 'confirm',
+      handler: () => {
+        this.transactionsService.removeAllData();
       }
-    };
-    this.destroyRef = effect(() => {
-      const coins = this.spotService.coins();
-      console.log('SpotPage coins', coins);
-      this.spotSource.data = coins.map(
-        c =>
-          ({
-            name: c.id,
-            totalCoins: c.totalCoins,
-            totalValue: c.totalCoins * c.marketPrice,
-            buyPrice: c.avgPrice,
-            curPrice: c.marketPrice,
-            profit: c.profit,
-            prcProfit:
-              c.totalCoins && c.avgPrice ? ((c.marketPrice - c.avgPrice) / c.avgPrice) * 100 : 0,
-            totalProfit: c.totalProfit
-          } as Coin)
-      );
-    });
-  }
+    }
+  ];
 
   ngAfterViewInit() {
-    this.spotSource.sort = this.sort;
     this.coinsIconsService.getIcon('BTC').then(/* url => console.log('icon url', url) */);
-  }
-
-  ngOnDestroy(): void {
-    this.destroyRef.destroy();
   }
 
   refresh(ev: any) {

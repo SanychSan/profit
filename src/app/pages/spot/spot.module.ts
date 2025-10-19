@@ -8,14 +8,16 @@ import { MatSortModule } from '@angular/material/sort';
 
 import { SpotPage } from './spot.page';
 import { SpotPageRoutingModule } from './spot-routing.module';
-// import { CoinComponentModule } from 'src/app/components/coin/coin.module';
+import { SpotTableDesktopComponent } from 'src/app/components/spot-table-desktop/spot-table-desktop.component';
+import { SpotTableMobileComponent } from 'src/app/components/spot-table-mobile/spot-table-mobile.component';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    // CoinComponentModule,
+    SpotTableDesktopComponent,
+    SpotTableMobileComponent,
     SpotPageRoutingModule,
     MatTableModule,
     MatSortModule

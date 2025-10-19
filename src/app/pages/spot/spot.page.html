@@ -1,16 +1,18 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>Spot</ion-title>
+    @if(coins().length) {
     <ion-text
       class="ion-padding-end"
       [ngClass]="{
-        'profit-positive': totalSpotProfit() > 0,
-        'profit-negative': totalSpotProfit() < 0
+        'txt-color-positive': totalSpotProfit() > 0,
+        'txt-color-negative': totalSpotProfit() < 0
       }"
       slot="end"
     >
       {{ totalSpotProfit() | currency:'USD':'symbol':'1.2-2' }}
     </ion-text>
+    }
   </ion-toolbar>
 </ion-header>
 
@@ -22,80 +24,28 @@
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title>Spot</ion-title>
+      @if(coins().length) {
       <ion-text
         class="ion-padding-end"
         [ngClass]="{
-          'profit-positive': totalSpotProfit() > 0,
-          'profit-negative': totalSpotProfit() < 0
+          'txt-color-positive': totalSpotProfit() > 0,
+          'txt-color-negative': totalSpotProfit() < 0
         }"
         slot="end"
       >
         {{ totalSpotProfit() | currency:'USD':'symbol':'1.2-2' }}
       </ion-text>
+      }
     </ion-toolbar>
   </ion-header>
 
-  <table
-    class="spot-table"
-    mat-table
-    [dataSource]="spotSource"
-    matSort
-    matSortActive="equity"
-    matSortDirection="desc"
-    matSortDisableClear="true"
-    [attr.hidden]="!spotSource.data.length ? true : null"
-  >
-    <ng-container matColumnDef="currency">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Currency</th>
-      <td mat-cell *matCellDef="let r">{{ r.name }}</td>
-    </ng-container>
+  @if(isHandset$ | async) {
+    <app-spot-table-mobile></app-spot-table-mobile>
+  } @else {
+    <app-spot-table-desktop></app-spot-table-desktop>
+  }
 
-    <ng-container matColumnDef="equity">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Equity</th>
-      <td mat-cell *matCellDef="let r">
-        {{ r.totalCoins }}<br />
-        <small class="txt-gray"> {{ r.totalValue | currency:'USD':'symbol':'1.2-2' }} </small>
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="profit">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Profit</th>
-      <td
-        mat-cell
-        *matCellDef="let r"
-        [ngClass]="{'profit-positive': r.profit > 0, 'profit-negative': r.profit < 0}"
-      >
-        {{ r.profit | currency:'USD':'symbol':'1.2-2' }}<br />
-        <small>{{ r.prcProfit | number:'1.2-2' }}%</small>
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="price">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Price</th>
-      <td mat-cell *matCellDef="let r">
-        <small class="txt-gray txt-mono">cur</small> {{ r.curPrice | currency:'USD':'symbol':'1.2-2'
-        }}<br />
-        <small class="txt-gray txt-mono">buy</small> {{ r.buyPrice | currency:'USD':'symbol':'1.2-2'
-        }}
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="totalProfit">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Total Profit</th>
-      <td
-        mat-cell
-        *matCellDef="let r"
-        [ngClass]="{'profit-positive': r.totalProfit > 0, 'profit-negative': r.totalProfit < 0}"
-      >
-        {{ r.totalProfit | currency:'USD':'symbol':'1.2-2' }}
-      </td>
-    </ng-container>
-
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-  </table>
-
-  @if(!spotSource.data.length) {
+  @if(!coins().length) {
   <div class="no-data">
     @if(isLoading()) {
     <ion-spinner color="secondary"></ion-spinner>
@@ -106,11 +56,32 @@
   }
 
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-    <ion-fab-button (click)="openFilePicker()" [disabled]="isLoading()">
-      <ion-icon name="document-outline"></ion-icon>
+    <ion-fab-button color="primary" [disabled]="isLoading()">
+      <ion-icon name="menu"></ion-icon>
     </ion-fab-button>
-    <span class="fab-label txt-gray ion-text-nowrap">Upload a CSV file</span>
+
+    <ion-fab-list side="start">
+      <ion-fab-button color="secondary" [disabled]="isLoading()" (click)="openFilePicker()">
+        <ion-icon name="document-outline"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button
+        id="present-alert"
+        color="danger"
+        [disabled]="isLoading()"
+        [hidden]="!coins().length"
+      >
+        <ion-icon name="trash-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab-list>
   </ion-fab>
+
+  <ion-alert
+    trigger="present-alert"
+    header="Be Careful!"
+    subHeader="Are you sure you want to delete all spot transactions?"
+    message="This action cannot be undone."
+    [buttons]="alertButtons"
+  ></ion-alert>
 </ion-content>
 
 <input type="file" accept=".csv" #fileInput hidden (change)="onFileSelected($event)" />
