@@ -6,9 +6,9 @@
       header-headline-color: var(--ion-text-color),
       row-item-label-text-color: var(--ion-text-color),
       row-item-outline-color: var(--ion-text-color),
-      header-headline-size: 16px,
-      row-item-label-text-size: 16px,
-      row-item-label-text-line-height: 24px,
+      header-headline-size: 15px,
+      row-item-label-text-size: 15px,
+      row-item-label-text-line-height: 22px,
       background-color: var(--ion-background-color)
     )
   );
@@ -16,7 +16,7 @@
 
 .spot-table {
   width: 100%;
-  margin-bottom: 80px;
+  margin-bottom: 50px;
 
   .mat-mdc-header-row {
     position: sticky;
@@ -29,7 +29,20 @@
     padding-top: 10px;
     padding-bottom: 10px;
   }
+  .mdc-data-table__header-cell {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+  .mat-sort-header-content {
+    flex-direction: column;
+  }
 }
+
+@media (prefers-color-scheme: dark) {
+  .spot-table .mdc-data-table__header-cell {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+}
+
 .txt-gray {
   color: gray;
 }

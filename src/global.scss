@@ -37,11 +37,23 @@
 @import "@ionic/angular/css/palettes/dark.system.css";
 
 
-body {
-  --ion-background-color: #27272a;
+:root {
+  --ion-background-color: #fff;
+  --ion-safe-area-top: env(safe-area-inset-top);
 }
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ion-background-color: #27272a;
+  }
+}
+
+ion-header, ion-toolbar {
+  padding-top: var(--ion-safe-area-top);
+}
+
 .txt-color-positive {
-  color: var(--ion-color-success-tint);
+  color: var(--ion-color-success-shade);
 }
 .txt-color-negative {
   color: var(--ion-color-danger-tint);

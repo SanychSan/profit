@@ -1,16 +1,10 @@
-import {
-  Component,
-  inject,
-  ViewChild,
-  AfterViewInit,
-  ElementRef,
-  computed
-} from '@angular/core';
-import { RefresherCustomEvent } from '@ionic/angular';
+import { Component, inject, ViewChild, AfterViewInit, ElementRef, computed } from '@angular/core';
+import { RefresherCustomEvent, Platform } from '@ionic/angular';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { map, shareReplay } from 'rxjs/operators';
 import { Papa } from 'ngx-papaparse';
-
+import { StatusBar } from '@capacitor/status-bar';
+import { Capacitor } from '@capacitor/core';
 import { SpotService } from 'src/app/services/spot.service';
 import { TransactionsService } from 'src/app/services/transactions.service';
 import { CoinsIconsService } from 'src/app/services/coins-icons.service';
@@ -27,14 +21,14 @@ export class SpotPage implements AfterViewInit {
   private transactionsService = inject(TransactionsService);
   private coinsIconsService = inject(CoinsIconsService);
   private bo = inject(BreakpointObserver);
+  private platform: Platform = inject(Platform);
 
   @ViewChild('fileInput', { static: false }) fileInput!: ElementRef<HTMLInputElement>;
 
-  isHandset$ = this.bo.observe(['(max-width: 767px)'])
-    .pipe(
-      map(state => state.matches),
-      shareReplay({ refCount: true, bufferSize: 1 })
-    );
+  isHandset$ = this.bo.observe(['(max-width: 767px)']).pipe(
+    map(state => state.matches),
+    shareReplay({ refCount: true, bufferSize: 1 })
+  );
 
   isLoading = computed(() => {
     const spotServiceState = this.spotService.state();
@@ -52,17 +46,25 @@ export class SpotPage implements AfterViewInit {
 
   public alertButtons = [
     {
-      text: 'Cancel',
-      role: 'cancel'
-    },
-    {
-      text: 'Yes, delete all',
+      text: 'Yes, delete',
       role: 'confirm',
       handler: () => {
         this.transactionsService.removeAllData();
       }
+    },
+    {
+      text: 'Cancel',
+      role: 'cancel'
     }
   ];
+
+  constructor() {
+    this.platform.ready().then(() => {
+      if (Capacitor.getPlatform() === 'android') {
+        StatusBar.setOverlaysWebView({ overlay: false });
+      }
+    });
+  }
 
   ngAfterViewInit() {
     this.coinsIconsService.getIcon('BTC').then(/* url => console.log('icon url', url) */);

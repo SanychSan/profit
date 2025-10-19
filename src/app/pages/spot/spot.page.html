@@ -3,7 +3,7 @@
     <ion-title>Spot</ion-title>
     @if(coins().length) {
     <ion-text
-      class="ion-padding-end"
+      class="ion-padding-end text-bold text-xl"
       [ngClass]="{
         'txt-color-positive': totalSpotProfit() > 0,
         'txt-color-negative': totalSpotProfit() < 0
@@ -26,7 +26,7 @@
       <ion-title>Spot</ion-title>
       @if(coins().length) {
       <ion-text
-        class="ion-padding-end"
+        class="ion-padding-end text-bold text-xl"
         [ngClass]="{
           'txt-color-positive': totalSpotProfit() > 0,
           'txt-color-negative': totalSpotProfit() < 0
@@ -40,12 +40,10 @@
   </ion-header>
 
   @if(isHandset$ | async) {
-    <app-spot-table-mobile></app-spot-table-mobile>
+  <app-spot-table-mobile></app-spot-table-mobile>
   } @else {
-    <app-spot-table-desktop></app-spot-table-desktop>
-  }
-
-  @if(!coins().length) {
+  <app-spot-table-desktop></app-spot-table-desktop>
+  } @if(!coins().length) {
   <div class="no-data">
     @if(isLoading()) {
     <ion-spinner color="secondary"></ion-spinner>
@@ -56,7 +54,7 @@
   }
 
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-    <ion-fab-button color="primary" [disabled]="isLoading()">
+    <ion-fab-button class="float-btn" color="primary" [disabled]="isLoading()">
       <ion-icon name="menu"></ion-icon>
     </ion-fab-button>
 
@@ -84,4 +82,10 @@
   ></ion-alert>
 </ion-content>
 
-<input type="file" accept=".csv" #fileInput hidden (change)="onFileSelected($event)" />
+<input
+  type="file"
+  accept=".csv,text/csv,application/csv,application/vnd.ms-excel,text/plain"
+  #fileInput
+  hidden
+  (change)="onFileSelected($event)"
+/>

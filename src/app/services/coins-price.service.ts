@@ -41,7 +41,7 @@ export class CoinsPriceService {
   private baseUrl = 'https://api.bybit.com/v5';
 
   coins = signal<SimplePrice | null>(null);
-  refreshMs = signal<number>(5 * 60 * 1000); // 5 minutes
+  refreshMs = 10_000; // 10 seconds
 
   public readonly state = signal<ServiceState>({
     init: false,
@@ -58,10 +58,9 @@ export class CoinsPriceService {
 
     effect(
       onCleanup => {
-        const interval = this.refreshMs();
         this.refresh();
 
-        const handle = setInterval(() => this.refresh(), interval);
+        const handle = setInterval(() => this.refresh(), this.refreshMs);
         onCleanup(() => clearInterval(handle));
       },
       { injector: this.destroyRef as any }

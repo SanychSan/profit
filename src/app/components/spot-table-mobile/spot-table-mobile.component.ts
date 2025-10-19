@@ -41,16 +41,14 @@ export class SpotTableMobileComponent implements AfterViewInit, OnDestroy {
         case 'currency':
           return item.totalValue ?? 0;
         case 'price':
-          return item.buyPrice ?? 0;
-        case 'totalProfit':
-          return item.totalProfit ?? 0;
+          return item.curPrice ?? 0;
         default:
           return (item as any)[property];
       }
     };
     this.destroyRef = effect(() => {
       const coins = this.spotService.coins();
-      console.log('SpotPage coins', coins);
+      // console.log('SpotPage coins', coins);
       this.spotSource.data = coins.map(
         c =>
           ({
