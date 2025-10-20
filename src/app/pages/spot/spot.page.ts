@@ -8,6 +8,10 @@ import { Capacitor } from '@capacitor/core';
 import { SpotService } from 'src/app/services/spot.service';
 import { TransactionsService } from 'src/app/services/transactions.service';
 import { CoinsIconsService } from 'src/app/services/coins-icons.service';
+import { SpotTableSettingsService } from 'src/app/services/spot-table-settings.service';
+import * as BIG from 'big.js';
+
+const { Big } = BIG;
 
 @Component({
   selector: 'app-spot',
@@ -22,8 +26,12 @@ export class SpotPage implements AfterViewInit {
   private coinsIconsService = inject(CoinsIconsService);
   private bo = inject(BreakpointObserver);
   private platform: Platform = inject(Platform);
+  private spotTableSettingsService = inject(SpotTableSettingsService);
 
   @ViewChild('fileInput', { static: false }) fileInput!: ElementRef<HTMLInputElement>;
+
+  hideZeroBuyCoins = this.spotTableSettingsService.hideZeroBuyCoins;
+  hideCoinsLessThanOneDollar = this.spotTableSettingsService.hideCoinsLessThanOneDollar;
 
   isHandset$ = this.bo.observe(['(max-width: 767px)']).pipe(
     map(state => state.matches),
@@ -41,7 +49,7 @@ export class SpotPage implements AfterViewInit {
 
   totalSpotProfit = computed(() => {
     const coins = this.spotService.coins();
-    return coins.reduce((sum, c) => sum + (c.totalProfit || 0), 0);
+    return coins.reduce((sum, c) => new Big(sum).plus(c.totalProfit || 0).toNumber(), 0);
   });
 
   public alertButtons = [

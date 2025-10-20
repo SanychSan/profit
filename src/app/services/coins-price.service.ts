@@ -41,7 +41,7 @@ export class CoinsPriceService {
   private baseUrl = 'https://api.bybit.com/v5';
 
   coins = signal<SimplePrice | null>(null);
-  refreshMs = 10_000; // 10 seconds
+  refreshMs = 10000000; // 10 seconds
 
   public readonly state = signal<ServiceState>({
     init: false,

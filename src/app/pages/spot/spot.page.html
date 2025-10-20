@@ -1,27 +1,33 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>Spot</ion-title>
-    @if(coins().length) {
-    <ion-text
-      class="ion-padding-end text-bold text-xl"
-      [ngClass]="{
-        'txt-color-positive': totalSpotProfit() > 0,
-        'txt-color-negative': totalSpotProfit() < 0
-      }"
-      slot="end"
-    >
-      {{ totalSpotProfit() | currency:'USD':'symbol':'1.2-2' }}
-    </ion-text>
-    }
-  </ion-toolbar>
-</ion-header>
+<ion-menu side="end" contentId="main-content">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>Table Settings</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-list class="table-settings-list">
+      <ion-item>
+        <ion-toggle
+          [checked]="hideCoinsLessThanOneDollar()"
+          labelPlacement="end"
+          (ionChange)="hideCoinsLessThanOneDollar.set($event.detail.checked)"
+          >Show coins less $1</ion-toggle
+        >
+      </ion-item>
+      <ion-item>
+        <ion-toggle
+          [checked]="hideZeroBuyCoins()"
+          labelPlacement="end"
+          (ionChange)="hideZeroBuyCoins.set($event.detail.checked)"
+          >Hide zero buy coins</ion-toggle
+        >
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>
 
-<ion-content [fullscreen]="true">
-  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
-
-  <ion-header collapse="condense">
+<div class="ion-page" id="main-content">
+  <ion-header [translucent]="true">
     <ion-toolbar>
       <ion-title>Spot</ion-title>
       @if(coins().length) {
@@ -31,56 +37,76 @@
           'txt-color-positive': totalSpotProfit() > 0,
           'txt-color-negative': totalSpotProfit() < 0
         }"
-        slot="end"
+        slot="secondary"
       >
         {{ totalSpotProfit() | currency:'USD':'symbol':'1.2-2' }}
       </ion-text>
       }
+      <ion-buttons slot="primary">
+        <!-- <ion-menu-button></ion-menu-button> -->
+        <ion-menu-toggle>
+          <ion-button fill="clear">
+            <ion-icon name="settings"></ion-icon>
+          </ion-button>
+        </ion-menu-toggle>
+      </ion-buttons>
     </ion-toolbar>
   </ion-header>
 
-  @if(isHandset$ | async) {
-  <app-spot-table-mobile></app-spot-table-mobile>
-  } @else {
-  <app-spot-table-desktop></app-spot-table-desktop>
-  } @if(!coins().length) {
-  <div class="no-data">
-    @if(isLoading()) {
-    <ion-spinner color="secondary"></ion-spinner>
+  <ion-content [fullscreen]="true">
+    <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+
+    <ion-header collapse="condense">
+      <ion-toolbar>
+        <ion-title>Spot</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    @if(isHandset$ | async) {
+    <app-spot-table-mobile></app-spot-table-mobile>
     } @else {
-    <p>No data available. Please upload a CSV file.</p>
+    <app-spot-table-desktop></app-spot-table-desktop>
+    } @if(!coins().length) {
+    <div class="no-data">
+      @if(isLoading()) {
+      <ion-spinner color="secondary"></ion-spinner>
+      } @else {
+      <p>No data available. Please upload a CSV file.</p>
+      }
+    </div>
     }
-  </div>
-  }
 
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-    <ion-fab-button class="float-btn" color="primary" [disabled]="isLoading()">
-      <ion-icon name="menu"></ion-icon>
-    </ion-fab-button>
-
-    <ion-fab-list side="start">
-      <ion-fab-button color="secondary" [disabled]="isLoading()" (click)="openFilePicker()">
-        <ion-icon name="document-outline"></ion-icon>
+    <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+      <ion-fab-button class="float-btn" [disabled]="isLoading()">
+        <ion-icon name="menu"></ion-icon>
       </ion-fab-button>
-      <ion-fab-button
-        id="present-alert"
-        color="danger"
-        [disabled]="isLoading()"
-        [hidden]="!coins().length"
-      >
-        <ion-icon name="trash-outline"></ion-icon>
-      </ion-fab-button>
-    </ion-fab-list>
-  </ion-fab>
 
-  <ion-alert
-    trigger="present-alert"
-    header="Be Careful!"
-    subHeader="Are you sure you want to delete all spot transactions?"
-    message="This action cannot be undone."
-    [buttons]="alertButtons"
-  ></ion-alert>
-</ion-content>
+      <ion-fab-list side="start">
+        <ion-fab-button color="secondary" [disabled]="isLoading()" (click)="openFilePicker()">
+          <ion-icon name="document-outline"></ion-icon>
+        </ion-fab-button>
+        <ion-fab-button
+          id="present-alert"
+          color="danger"
+          [disabled]="isLoading()"
+          [hidden]="!coins().length"
+        >
+          <ion-icon name="trash-outline"></ion-icon>
+        </ion-fab-button>
+      </ion-fab-list>
+    </ion-fab>
+
+    <ion-alert
+      trigger="present-alert"
+      header="Be Careful!"
+      subHeader="Are you sure you want to delete all spot transactions?"
+      message="This action cannot be undone."
+      [buttons]="alertButtons"
+    ></ion-alert>
+  </ion-content>
+</div>
 
 <input
   type="file"

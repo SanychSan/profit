@@ -18,12 +18,15 @@
 #present-alert[hidden] {
   display: none !important;
 }
-
-.float-btn {
-  transform: translateX(50%);
-  transition: transform 0.3s ease-in-out;
-
-  &.fab-button-close-active {
-    transform: translateX(0);
-  }
+.table-settings-list {
+  min-height: 100%;
 }
+
+// .float-btn {
+//   transform: translateX(50%);
+//   transition: transform 0.3s ease-in-out;
+
+//   &.fab-button-close-active {
+//     transform: translateX(0);
+//   }
+// }

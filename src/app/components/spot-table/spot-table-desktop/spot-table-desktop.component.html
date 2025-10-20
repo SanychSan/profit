@@ -22,11 +22,14 @@
   </ng-container>
 
   <ng-container matColumnDef="price">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header>Price</th>
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+      <div>
+        Price<br />
+        <small class="txt-gray">cur / buy</small>
+      </div>
+    </th>
     <td mat-cell *matCellDef="let r">
-      <small class="txt-gray txt-mono">cur</small>
       {{ r.curPrice | currency : 'USD' : 'symbol' : '1.2-2' }}<br />
-      <small class="txt-gray txt-mono">buy</small>
       {{ r.buyPrice | currency : 'USD' : 'symbol' : '1.2-2' }}
     </td>
   </ng-container>
