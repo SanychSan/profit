@@ -26,12 +26,9 @@ export class SpotPage implements AfterViewInit {
   private coinsIconsService = inject(CoinsIconsService);
   private bo = inject(BreakpointObserver);
   private platform: Platform = inject(Platform);
-  private spotTableSettingsService = inject(SpotTableSettingsService);
+  public spotTableSettingsService = inject(SpotTableSettingsService);
 
   @ViewChild('fileInput', { static: false }) fileInput!: ElementRef<HTMLInputElement>;
-
-  hideZeroBuyCoins = this.spotTableSettingsService.hideZeroBuyCoins;
-  hideCoinsLessThanOneDollar = this.spotTableSettingsService.hideCoinsLessThanOneDollar;
 
   isHandset$ = this.bo.observe(['(max-width: 767px)']).pipe(
     map(state => state.matches),

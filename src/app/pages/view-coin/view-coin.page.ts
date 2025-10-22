@@ -1,9 +1,9 @@
 
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { IonicModule, Platform } from '@ionic/angular';
+import { Platform } from '@ionic/angular';
 import { SpotService } from 'src/app/services/spot.service';
-import { Coin } from 'src/app/types/coin.type';
+import type { Coin } from 'src/app/classes/coin';
 
 @Component({
   selector: 'app-view-coin',

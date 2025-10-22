@@ -19,7 +19,8 @@ import { AppRoutingModule } from './app-routing.module';
     IonicModule.forRoot(),
     AppRoutingModule,
     IonicStorageModule.forRoot({
-      name: '__myappdb'
+      name: '__CryptoProfit_DB',
+      storeName: 'store'
     })
   ],
   providers: [

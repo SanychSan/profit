@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
 
-import { Coin } from 'src/app/types/coin.type';
+import { CoinInterface } from 'src/app/classes/coin';
 import { SpotTable } from '../spot-table';
 
 @Component({
@@ -19,12 +19,12 @@ export class SpotTableDesktopComponent extends SpotTable {
 
   constructor() {
     super();
-    this.spotSource.sortingDataAccessor = (item: Coin, property: string) => {
+    this.spotSource.sortingDataAccessor = (item: CoinInterface, property: string) => {
       switch (property) {
         case 'equity':
-          return item.totalValue ?? 0;
+          return item.totalCost ?? 0;
         case 'price':
-          return item.buyPrice ?? 0;
+          return item.avgBuyPrice ?? 0;
         case 'totalProfit':
           return item.totalProfit ?? 0;
         default:

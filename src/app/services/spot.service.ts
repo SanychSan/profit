@@ -3,7 +3,7 @@ import { Injectable, WritableSignal, signal, inject, effect, DestroyRef } from '
 import { CoinsPriceService } from './coins-price.service';
 import { TransactionsService } from './transactions.service';
 import { Transaction } from 'src/app/types/transaction.type';
-import { Coin } from 'src/utils/coin';
+import { Coin } from 'src/app/classes/coin';
 import { ServiceState } from 'src/app/types/service-state.type';
 
 @Injectable({
@@ -47,7 +47,7 @@ export class SpotService {
         const coins: Coin[] = [];
         for (const tx of transactions) {
           const coinId = tx.SpotPairs.replace('USDT', '');
-          const coin = coins.find(c => c.id === coinId);
+          const coin = coins.find(c => c.name === coinId);
           if (coin) {
             coin.addTransaction(tx);
           } else {
