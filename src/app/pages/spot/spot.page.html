@@ -24,15 +24,6 @@
           >Hide zero buy coins</ion-toggle
         >
       </ion-item>
-      <ion-item>
-        <ion-toggle
-          [checked]="spotTableSettingsService.showPriceIncludingExchangeFees()"
-          justify="space-between"
-          helperText="Show real prices taking into account the exchange fees"
-          (ionChange)="spotTableSettingsService.showPriceIncludingExchangeFees.set($event.detail.checked)"
-          >Show prices after fees</ion-toggle
-        >
-      </ion-item>
     </ion-list>
   </ion-content>
 </ion-menu>

@@ -39,7 +39,7 @@ export abstract class SpotTable implements AfterViewInit, OnDestroy {
         })
         .filter(c => {
           if (this.spotTableSettingsService.hideCoinsLessThanOneDollar()) {
-            return c.totalInvested > 1;
+            return c.totalCost > 1;
           }
           return true;
         });

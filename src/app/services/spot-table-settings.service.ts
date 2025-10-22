@@ -9,7 +9,6 @@ export class SpotTableSettingsService {
 
   public hideZeroBuyCoins: WritableSignal<boolean | null> = signal(null);
   public hideCoinsLessThanOneDollar: WritableSignal<boolean | null> = signal(null);
-  public showPriceIncludingExchangeFees: WritableSignal<boolean | null> = signal(null);
 
   constructor() {
     this.loadSettings();
@@ -30,16 +29,6 @@ export class SpotTableSettingsService {
         );
       }
     });
-
-    effect(() => {
-      const showPriceIncludingExchangeFees = this.showPriceIncludingExchangeFees();
-      if (typeof showPriceIncludingExchangeFees === 'boolean') {
-        this.storageService.set(
-          'spotTableSettings.showPriceIncludingExchangeFees',
-          showPriceIncludingExchangeFees
-        );
-      }
-    });
   }
 
   private async loadSettings() {
@@ -53,13 +42,6 @@ export class SpotTableSettingsService {
     );
     this.hideCoinsLessThanOneDollar.set(
       typeof hideCoinsLessThanOneDollar === 'boolean' ? hideCoinsLessThanOneDollar : false
-    );
-
-    const showPriceIncludingExchangeFees = await this.storageService.get<boolean>(
-      'spotTableSettings.showPriceIncludingExchangeFees'
-    );
-    this.showPriceIncludingExchangeFees.set(
-      typeof showPriceIncludingExchangeFees === 'boolean' ? showPriceIncludingExchangeFees : false
     );
   }
 }

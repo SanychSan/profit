@@ -3,7 +3,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { SpotService } from 'src/app/services/spot.service';
-import type { Coin } from 'src/app/classes/coin';
+import { CoinInterface } from 'src/app/classes/coin';
 
 @Component({
   selector: 'app-view-coin',
@@ -12,7 +12,7 @@ import type { Coin } from 'src/app/classes/coin';
   standalone: false,
 })
 export class ViewCoinPage implements OnInit {
-  public coin!: Coin;
+  public coin!: CoinInterface;
   private spotService = inject(SpotService);
   private activatedRoute = inject(ActivatedRoute);
   private platform = inject(Platform);

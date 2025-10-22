@@ -50,8 +50,15 @@
       >
         {{ r.totalProfit | currency : 'USD' : 'symbol' : '1.2-2' }}
       </div>
-      {{ r.profit | currency : 'USD' : 'symbol' : '1.2-2' }}<br />
-      {{ r.prcProfit | number : '1.2-2' }}%
+      <div
+        [ngClass]="{
+          'txt-color-positive': r.currentProfit > 0,
+          'txt-color-negative': r.currentProfit < 0
+        }"
+      >
+        {{ r.currentProfit | currency : 'USD' : 'symbol' : '1.2-2' }}<br />
+        {{ r.prcCurrentProfit | number : '1.2-2' }}%
+      </div>
     </td>
   </ng-container>
 

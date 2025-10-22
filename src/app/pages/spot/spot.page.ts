@@ -96,7 +96,10 @@ export class SpotPage implements AfterViewInit {
         this.transactionsService.addTransactions(result.data);
         this.fileInput.nativeElement.value = '';
       },
-      error: err => console.error('Parse error:', err)
+      error: err => {
+        console.error('Parse error:', err);
+        this.fileInput.nativeElement.value = '';
+      }
     });
   }
 }

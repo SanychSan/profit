@@ -17,11 +17,7 @@
     <th mat-header-cell *matHeaderCellDef mat-sort-header>Equity</th>
     <td mat-cell *matCellDef="let coin">
       {{ coin.totalCoins }}<br />
-      @if (spotTableSettingsService.showPriceIncludingExchangeFees()) {
-        <small class="txt-gray"> {{ coin.totalCostWithoutFees | currency : 'USD' : 'symbol' : '1.2-2' }} </small>
-      } @else {
-        <small class="txt-gray"> {{ coin.totalCost | currency : 'USD' : 'symbol' : '1.2-2' }} </small>
-      }
+      <small class="txt-gray"> {{ coin.totalCost | currency : 'USD' : 'symbol' : '1.2-2' }} </small>
     </td>
   </ng-container>
 
@@ -34,12 +30,7 @@
     </th>
     <td mat-cell *matCellDef="let coin">
       {{ coin.marketPrice | currency : 'USD' : 'symbol' : '1.2-3' }}<br />
-
-      @if (spotTableSettingsService.showPriceIncludingExchangeFees()) {
-        {{ coin.priceOfProfit | currency : 'USD' : 'symbol' : '1.2-3' }}
-      } @else {
-        {{ coin.avgBuyPrice | currency : 'USD' : 'symbol' : '1.2-3' }}
-      }
+      {{ coin.avgBuyPrice | currency : 'USD' : 'symbol' : '1.2-3' }}
     </td>
   </ng-container>
 
@@ -48,10 +39,13 @@
     <td
       mat-cell
       *matCellDef="let coin"
-      [ngClass]="{ 'txt-color-positive': coin.profit > 0, 'txt-color-negative': coin.profit < 0 }"
+      [ngClass]="{
+        'txt-color-positive': coin.currentProfit > 0,
+        'txt-color-negative': coin.currentProfit < 0
+      }"
     >
-      {{ coin.profit | currency : 'USD' : 'symbol' : '1.2-2' }}<br />
-      <small>{{ coin.prcProfit | number : '1.2-2' }}%</small>
+      {{ coin.currentProfit | currency : 'USD' : 'symbol' : '1.2-2' }}<br />
+      <small>{{ coin.prcCurrentProfit | number : '1.2-2' }}%</small>
     </td>
   </ng-container>
 

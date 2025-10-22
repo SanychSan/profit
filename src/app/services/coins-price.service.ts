@@ -104,12 +104,12 @@ export class CoinsPriceService {
   }
 
   private transformData(list: PriceEntry[]): SimplePrice {
-    return list.reduce(
-      (acc, entry) => ({
+    return list.reduce((acc, entry) => {
+      const key = entry.symbol.replace('USDT', '');
+      return {
         ...acc,
-        [entry.symbol.replace('USDT', '')]: parseFloat(entry.lastPrice)
-      }),
-      {} as SimplePrice
-    );
+        [key]: parseFloat(entry.lastPrice)
+      };
+    }, {} as SimplePrice);
   }
 }
