@@ -1,13 +1,15 @@
 import { Component, inject, ViewChild, AfterViewInit, ElementRef, computed } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { RefresherCustomEvent, Platform } from '@ionic/angular';
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { map, shareReplay } from 'rxjs/operators';
+import { map, shareReplay, filter, take } from 'rxjs/operators';
 import { Papa } from 'ngx-papaparse';
 import { StatusBar } from '@capacitor/status-bar';
 import { Capacitor } from '@capacitor/core';
+
 import { SpotService } from 'src/app/services/spot.service';
 import { TransactionsService } from 'src/app/services/transactions.service';
-import { CoinsIconsService } from 'src/app/services/coins-icons.service';
+import { CoinsPriceService } from 'src/app/services/coins-price.service';
 import { SpotTableSettingsService } from 'src/app/services/spot-table-settings.service';
 import * as BIG from 'big.js';
 
@@ -23,9 +25,10 @@ export class SpotPage implements AfterViewInit {
   private papa = inject(Papa);
   private spotService = inject(SpotService);
   private transactionsService = inject(TransactionsService);
-  private coinsIconsService = inject(CoinsIconsService);
+  private coinsPriceService = inject(CoinsPriceService);
   private bo = inject(BreakpointObserver);
   private platform: Platform = inject(Platform);
+  private coinsPriceServiceState$ = toObservable(this.coinsPriceService.state);
   public spotTableSettingsService = inject(SpotTableSettingsService);
 
   @ViewChild('fileInput', { static: false }) fileInput!: ElementRef<HTMLInputElement>;
@@ -72,13 +75,18 @@ export class SpotPage implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.coinsIconsService.getIcon('BTC').then(/* url => console.log('icon url', url) */);
+    // this.coinsIconsService.getIcon('BTC').then(/* url => console.log('icon url', url) */);
   }
 
   refresh(ev: any) {
-    setTimeout(() => {
-      (ev as RefresherCustomEvent).detail.complete();
-    }, 3000);
+    this.coinsPriceService.refresh();
+    this.coinsPriceServiceState$
+      .pipe(
+        map(s => s.loading),
+        filter(l => l === false),
+        take(1)
+      )
+      .subscribe(() => (ev as RefresherCustomEvent).detail.complete());
   }
 
   openFilePicker() {

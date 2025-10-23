@@ -20,8 +20,8 @@ const initStorageFactory = (storage: StorageService) => () => storage.init();
     IonicModule.forRoot(),
     AppRoutingModule,
     IonicStorageModule.forRoot({
-      name: '__CryptoProfit_DB',
-      storeName: 'store'
+      name: '__Profit_DB',
+      storeName: 'db'
     }),
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: !isDevMode(),
