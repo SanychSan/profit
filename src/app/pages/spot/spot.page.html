@@ -110,9 +110,10 @@
 </div>
 
 <input
+  #fileInput
   type="file"
   accept=".csv,text/csv,application/csv,application/vnd.ms-excel,text/plain"
-  #fileInput
+  multiple
   hidden
   (change)="onFileSelected($event)"
 />

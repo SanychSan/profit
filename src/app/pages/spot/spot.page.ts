@@ -94,20 +94,31 @@ export class SpotPage implements AfterViewInit {
   }
 
   onFileSelected(event: Event) {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (!file) return;
+    const files = (event.target as HTMLInputElement).files;
+    if (!files || files.length === 0) {
+      return;
+    }
 
-    this.papa.parse(file, {
-      header: true,
-      skipEmptyLines: true,
-      complete: result => {
-        this.transactionsService.addTransactions(result.data);
-        this.fileInput.nativeElement.value = '';
-      },
-      error: err => {
-        console.error('Parse error:', err);
-        this.fileInput.nativeElement.value = '';
-      }
+    Promise.all(
+      Array.from(files).map(file => {
+        return new Promise<any[]>(resolve => {
+          this.papa.parse(file, {
+            header: true,
+            skipEmptyLines: true,
+            complete: result => {
+              resolve(this.transactionsService.validateFormat(result.data) ? result.data : []);
+            },
+            error: err => {
+              console.error('Parse error:', err);
+              resolve([]);
+            }
+          });
+        });
+      })
+    ).then(data => {
+      const flattened = ([] as any[]).concat(...data);
+      this.transactionsService.addTransactions(flattened);
+      this.fileInput.nativeElement.value = '';
     });
   }
 }

@@ -1,20 +1,23 @@
 type OrderType = 'LIMIT' | 'MARKET' | 'STOP' | 'STOP_LIMIT';
 type Direction = 'BUY' | 'SELL';
 
-export interface TransactionRaw {
-  'Spot Pairs': string;
-  'Order Type': OrderType;
-  Direction: Direction;
-  feeCoin: string;
-  ExecFeeV2: string | number;
-  'Filled Value': number;
-  'Filled Price': number;
-  'Filled Quantity': number;
-  Fees: number;
-  'Transaction ID': number | string;
-  'Order No.': number | string;
-  'Timestamp (UTC)': string;
-}
+export const TransactionKeys = [
+  'Spot Pairs',
+  'Order Type',
+  'Direction',
+  'feeCoin',
+  'ExecFeeV2',
+  'Filled Value',
+  'Filled Price',
+  'Filled Quantity',
+  'Fees',
+  'Transaction ID',
+  'Order No.',
+  'Timestamp (UTC)'
+] as const;
+
+export type TransactionKey = (typeof TransactionKeys)[number];
+export type TransactionRaw = { [key in TransactionKey]: string };
 
 export interface Transaction {
   SpotPairs: string;

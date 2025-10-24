@@ -2,7 +2,7 @@ import { Injectable, WritableSignal, Signal, computed, signal, inject } from '@a
 
 import { StorageService } from './storage.service';
 
-import { Transaction, TransactionRaw } from 'src/app/types/transaction.type';
+import { Transaction, TransactionRaw, TransactionKeys } from 'src/app/types/transaction.type';
 // import { getData } from 'src/mock/data';
 
 const CLEAN_KEY_RE = /[.\s]|\(UTC\)/g;
@@ -68,20 +68,23 @@ export class TransactionsService {
 
   public async addTransactions(data: TransactionRaw[]): Promise<void> {
     const storedData = (await this.storageService.get<TransactionRaw[]>(this.STORAGE_KEY)) || [];
-    const newData = data.filter(
-      nd => !storedData.some(cd => cd['Transaction ID'] === nd['Transaction ID'])
-    );
 
-    const result = [...storedData, ...newData].sort((a, b) => {
-      // const t1 = new Date(a['Timestamp (UTC)']).getTime();
-      // const t2 = new Date(b['Timestamp (UTC)']).getTime();
-      // return t2 - t1;
-      const t1 = `${a['Transaction ID']}`;
-      const t2 = `${b['Transaction ID']}`;
-      if (t1 < t2) return -1;
-      if (t1 > t2) return 1;
-      return 0;
-    });
+    const result = [...storedData, ...data]
+      .filter(
+        // remove duplicates
+        (obj, index, self) =>
+          index === self.findIndex(o => o['Transaction ID'] === obj['Transaction ID'])
+      )
+      .sort((a, b) => {
+        // const t1 = new Date(a['Timestamp (UTC)']).getTime();
+        // const t2 = new Date(b['Timestamp (UTC)']).getTime();
+        // return t2 - t1;
+        const t1 = `${a['Transaction ID']}`;
+        const t2 = `${b['Transaction ID']}`;
+        if (t1 < t2) return -1;
+        if (t1 > t2) return 1;
+        return 0;
+      });
 
     await this.storageService.set(this.STORAGE_KEY, result);
     this.rawData.set(result);
@@ -90,5 +93,19 @@ export class TransactionsService {
   public async removeAllData(): Promise<void> {
     await this.storageService.remove(this.STORAGE_KEY);
     this.rawData.set([]);
+  }
+
+  public validateFormat(data: TransactionRaw[]): boolean {
+    if (data.length === 0) {
+      return false;
+    }
+
+    for (const field of TransactionKeys) {
+      if (!(field in data[0])) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }

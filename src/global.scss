@@ -37,13 +37,16 @@
 @import "@ionic/angular/css/palettes/dark.system.css";
 
 
-:root {
+:root,
+:root.ios {
   --ion-background-color: #fff;
   --ion-safe-area-top: env(safe-area-inset-top);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root,
+  :root.ios {
+    --ion-item-background: #27272a;
     --ion-background-color: #27272a;
   }
 }
