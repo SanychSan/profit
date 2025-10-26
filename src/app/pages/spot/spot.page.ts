@@ -1,17 +1,25 @@
-import { Component, inject, ViewChild, AfterViewInit, ElementRef, computed } from '@angular/core';
+import {
+  Component,
+  inject,
+  ViewChild,
+  AfterViewInit,
+  ElementRef,
+  computed,
+  signal
+} from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { RefresherCustomEvent, Platform } from '@ionic/angular';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { map, shareReplay, filter, take } from 'rxjs/operators';
-import { Papa } from 'ngx-papaparse';
 import { StatusBar } from '@capacitor/status-bar';
 import { Capacitor } from '@capacitor/core';
+import * as BIG from 'big.js';
 
 import { SpotService } from 'src/app/services/spot.service';
-import { TransactionsService } from 'src/app/services/transactions.service';
+import { BybitCSVTxsService } from 'src/app/services/bybit-csv-txs.service';
 import { CoinsPriceService } from 'src/app/services/coins-price.service';
 import { SpotTableSettingsService } from 'src/app/services/spot-table-settings.service';
-import * as BIG from 'big.js';
+import { BybitAPITxsService } from 'src/app/services/bybit-api-txs.service';
 
 const { Big } = BIG;
 
@@ -22,14 +30,18 @@ const { Big } = BIG;
   standalone: false
 })
 export class SpotPage implements AfterViewInit {
-  private papa = inject(Papa);
   private spotService = inject(SpotService);
-  private transactionsService = inject(TransactionsService);
+  public bybitCSVTxsService = inject(BybitCSVTxsService);
+  public bybitAPITxsService = inject(BybitAPITxsService);
   private coinsPriceService = inject(CoinsPriceService);
   private bo = inject(BreakpointObserver);
   private platform: Platform = inject(Platform);
   private coinsPriceServiceState$ = toObservable(this.coinsPriceService.state);
   public spotTableSettingsService = inject(SpotTableSettingsService);
+
+  private apiKey = this.bybitAPITxsService.apiKey();
+  private secretKey = this.bybitAPITxsService.secretKey();
+  public hasChangesCredentials = signal(false);
 
   @ViewChild('fileInput', { static: false }) fileInput!: ElementRef<HTMLInputElement>;
 
@@ -57,7 +69,7 @@ export class SpotPage implements AfterViewInit {
       text: 'Yes, delete',
       role: 'confirm',
       handler: () => {
-        this.transactionsService.removeAllData();
+        this.bybitCSVTxsService.removeAllData();
       }
     },
     {
@@ -93,32 +105,36 @@ export class SpotPage implements AfterViewInit {
     this.fileInput.nativeElement.click();
   }
 
-  onFileSelected(event: Event) {
+  async onFileSelected(event: Event): Promise<void> {
     const files = (event.target as HTMLInputElement).files;
     if (!files || files.length === 0) {
       return;
     }
 
-    Promise.all(
-      Array.from(files).map(file => {
-        return new Promise<any[]>(resolve => {
-          this.papa.parse(file, {
-            header: true,
-            skipEmptyLines: true,
-            complete: result => {
-              resolve(this.transactionsService.validateFormat(result.data) ? result.data : []);
-            },
-            error: err => {
-              console.error('Parse error:', err);
-              resolve([]);
-            }
-          });
-        });
-      })
-    ).then(data => {
-      const flattened = ([] as any[]).concat(...data);
-      this.transactionsService.addTransactions(flattened);
-      this.fileInput.nativeElement.value = '';
-    });
+    await this.bybitCSVTxsService.addTxFiles(files);
+    this.fileInput.nativeElement.value = '';
+  }
+
+  downloadData() {
+    this.bybitAPITxsService.downloadData();
+    // this.bybitAPITxsService.downloadMockData();
+  }
+
+  changeCredentials(type: 'apiKey' | 'secretKey', target: EventTarget | null) {
+    if (!(target instanceof HTMLInputElement)) {
+      return;
+    }
+    const value = target.value.trim();
+
+    if (type === 'apiKey') {
+      this.apiKey = value;
+    } else if (type === 'secretKey') {
+      this.secretKey = value;
+    }
+    this.hasChangesCredentials.set(true);
+  }
+  updateCredentials() {
+    this.bybitAPITxsService.setApiCredentials(this.apiKey, this.secretKey);
+    this.hasChangesCredentials.set(false);
   }
 }

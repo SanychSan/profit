@@ -7,23 +7,59 @@
 
   <ion-content>
     <ion-list class="table-settings-list">
-      <ion-item>
-        <ion-toggle
-          [checked]="spotTableSettingsService.hideCoinsLessThanOneDollar()"
-          justify="space-between"
-          (ionChange)="spotTableSettingsService.hideCoinsLessThanOneDollar.set($event.detail.checked)"
-          >Hide coins less $1</ion-toggle
-        >
-      </ion-item>
-      <ion-item>
-        <ion-toggle
-          [checked]="spotTableSettingsService.hideZeroBuyCoins()"
-          justify="space-between"
-          helperText="Hide coins which you haven't bought. For example coins from staking or airdrop"
-          (ionChange)="spotTableSettingsService.hideZeroBuyCoins.set($event.detail.checked)"
-          >Hide zero buy coins</ion-toggle
-        >
-      </ion-item>
+      <ion-item-group>
+        <ion-item-divider>
+          <ion-label>Table Settings</ion-label>
+        </ion-item-divider>
+        <ion-item>
+          <ion-toggle
+            [checked]="spotTableSettingsService.hideCoinsLessThanOneDollar()"
+            justify="space-between"
+            (ionChange)="spotTableSettingsService.hideCoinsLessThanOneDollar.set($event.detail.checked)"
+            >Hide coins less $1</ion-toggle
+          >
+        </ion-item>
+        <ion-item>
+          <ion-toggle
+            [checked]="spotTableSettingsService.hideZeroBuyCoins()"
+            justify="space-between"
+            helperText="Hide coins which you haven't bought. For example coins from staking or airdrop"
+            (ionChange)="spotTableSettingsService.hideZeroBuyCoins.set($event.detail.checked)"
+            >Hide zero buy coins</ion-toggle
+          >
+        </ion-item>
+      </ion-item-group>
+
+      <ion-item-group>
+        <ion-item-divider>
+          <ion-label>Credentials</ion-label>
+        </ion-item-divider>
+        <ion-item>
+          <ion-input
+            label="API Key"
+            labelPlacement="stacked"
+            [value]="bybitAPITxsService.apiKey()"
+            (change)="changeCredentials('apiKey', $event.target)"
+          ></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input
+            label="Secret Key"
+            labelPlacement="stacked"
+            type="password"
+            [value]="bybitAPITxsService.secretKey()"
+            (change)="changeCredentials('secretKey', $event.target)"
+          ></ion-input>
+        </ion-item>
+        <div class="ion-padding-horizontal">
+          <ion-button
+            expand="block"
+            [disabled]="!hasChangesCredentials()"
+            (click)="updateCredentials()"
+            >Update credentials</ion-button
+          >
+        </div>
+      </ion-item-group>
     </ion-list>
   </ion-content>
 </ion-menu>
@@ -50,6 +86,13 @@
             <ion-icon name="settings-outline"></ion-icon>
           </ion-button>
         </ion-menu-toggle>
+        <ion-button fill="clear" (click)="downloadData()">
+          @if (bybitAPITxsService.isLoading()) {
+          <ion-icon class="rotate" name="sync-outline"></ion-icon>
+          } @else {
+          <ion-icon name="cloud-download-outline"></ion-icon>
+          }
+        </ion-button>
       </ion-buttons>
     </ion-toolbar>
   </ion-header>

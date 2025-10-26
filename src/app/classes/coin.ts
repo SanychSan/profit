@@ -1,5 +1,4 @@
 import * as BIG from 'big.js';
-import { Transaction } from 'src/app/types/transaction.type';
 
 const { Big } = BIG;
 
@@ -14,6 +13,15 @@ export interface CoinInterface {
   prcCurrentProfit: number;
 
   marketPrice: number;
+}
+
+export interface Transaction {
+  id: string;
+  direction: 'BUY' | 'SELL';
+  qty: number;
+  price: number;
+  fees: number;
+  timestamp: number;
 }
 
 export class Coin implements CoinInterface {
@@ -83,23 +91,22 @@ export class Coin implements CoinInterface {
   addTransaction(tx: Transaction): void {
     this.transactions.push(tx);
 
-    if (tx.Direction === 'BUY') {
-      const spent = new Big(tx.FilledValue);
-      const qty = new Big(tx.FilledQuantity).minus(tx.Fees);
-      // const totalQty = new Big(this.#totalCoins).plus(qty);
+    if (tx.direction === 'BUY') {
+      const spent = new Big(tx.qty).times(tx.price);
+      const qty = new Big(tx.qty).minus(tx.fees);
 
       this.#avgBuyPrice = new Big(this.#avgBuyPrice)
         .times(this.#totalCoins)
-        .plus(tx.FilledValue)
+        .plus(spent)
         .div(new Big(this.#totalCoins).plus(qty))
         .toNumber();
       this.#totalCoins = new Big(this.#totalCoins).plus(qty).toNumber();
       this.#totalProfit = new Big(this.#totalProfit).minus(spent).toNumber();
     }
 
-    if (tx.Direction === 'SELL') {
-      const received = new Big(tx.FilledValue).minus(tx.Fees);
-      const qty = new Big(tx.FilledQuantity);
+    if (tx.direction === 'SELL') {
+      const received = new Big(tx.qty).times(tx.price).minus(tx.fees);
+      const qty = new Big(tx.qty);
 
       this.#totalCoins = new Big(this.#totalCoins).minus(qty).toNumber();
       if (this.#totalCoins < 0) {

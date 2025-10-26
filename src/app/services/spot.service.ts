@@ -1,17 +1,18 @@
 import { Injectable, WritableSignal, signal, inject, effect, DestroyRef } from '@angular/core';
 
 import { CoinsPriceService } from './coins-price.service';
-import { TransactionsService } from './transactions.service';
-import { Transaction } from 'src/app/types/transaction.type';
+import { BybitCSVTxsService } from './bybit-csv-txs.service';
+import { BybitCSVTx } from 'src/app/types/transaction.type';
 import { Coin } from 'src/app/classes/coin';
 import { ServiceState } from 'src/app/types/service-state.type';
+import { bybitCsvTxToCoinTx } from 'src/app/utils/bybit-csv-tx-to-coin-tx';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SpotService {
   private coinsPriceService = inject(CoinsPriceService);
-  private transactionsService = inject(TransactionsService);
+  private bybitCSVTxsService = inject(BybitCSVTxsService);
 
   public readonly state = signal<ServiceState>({
     init: true,
@@ -37,7 +38,7 @@ export class SpotService {
 
     effect(
       () => {
-        const transactions: Transaction[] = this.transactionsService.spot();
+        const transactions: BybitCSVTx[] = this.bybitCSVTxsService.txs();
         const coinsPrice = this.coinsPriceService.coins();
 
         if (!coinsPrice || Object.keys(coinsPrice).length === 0) {
@@ -46,13 +47,14 @@ export class SpotService {
 
         const coins: Coin[] = [];
         for (const tx of transactions) {
-          const coinId = tx.SpotPairs.replace('USDT', '');
+          const coinId = tx['Spot Pairs'].replace('USDT', '');
           const coin = coins.find(c => c.name === coinId);
+          const coinTx = bybitCsvTxToCoinTx(tx);
           if (coin) {
-            coin.addTransaction(tx);
+            coin.addTransaction(coinTx);
           } else {
             const newCoin = new Coin(coinId, coinsPrice[coinId]);
-            newCoin.addTransaction(tx);
+            newCoin.addTransaction(coinTx);
             coins.push(newCoin);
           }
         }

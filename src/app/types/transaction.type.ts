@@ -1,7 +1,7 @@
-type OrderType = 'LIMIT' | 'MARKET' | 'STOP' | 'STOP_LIMIT';
-type Direction = 'BUY' | 'SELL';
+// type OrderType = 'LIMIT' | 'MARKET' | 'STOP' | 'STOP_LIMIT';
+// type Direction = 'BUY' | 'SELL';
 
-export const TransactionKeys = [
+export const BybitCSVTxKeys = [
   'Spot Pairs',
   'Order Type',
   'Direction',
@@ -15,21 +15,32 @@ export const TransactionKeys = [
   'Order No.',
   'Timestamp (UTC)'
 ] as const;
+export type BybitCSVTxKey = (typeof BybitCSVTxKeys)[number];
+export type BybitCSVTx = { [key in BybitCSVTxKey]: string };
 
-export type TransactionKey = (typeof TransactionKeys)[number];
-export type TransactionRaw = { [key in TransactionKey]: string };
-
-export interface Transaction {
-  SpotPairs: string;
-  OrderType: OrderType;
-  Direction: Direction;
-  feeCoin: string;
-  ExecFeeV2: string | number;
-  FilledValue: number;
-  FilledPrice: number;
-  FilledQuantity: number;
-  Fees: number;
-  TransactionID: string;
-  OrderNo: string;
-  Timestamp: string;
-}
+export const BybitAPITxKeys = [
+  'bonusChange',
+  'cashBalance',
+  'cashFlow',
+  'category',
+  'change',
+  'currency',
+  'extraFees',
+  'fee',
+  'feeRate',
+  'funding',
+  'id',
+  'orderId',
+  'orderLinkId',
+  'qty',
+  'side',
+  'size',
+  'symbol',
+  'tradeId',
+  'tradePrice',
+  'transSubType',
+  'transactionTime',
+  'type'
+] as const;
+export type BybitAPITxKey = (typeof BybitAPITxKeys)[number];
+export type BybitAPITx = { [key in BybitAPITxKey]: string };

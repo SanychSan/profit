@@ -22,6 +22,18 @@
   min-height: 100%;
 }
 
+.rotate {
+  animation: rotation 2s infinite linear;
+}
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}
+
 // .float-btn {
 //   transform: translateX(50%);
 //   transition: transform 0.3s ease-in-out;
