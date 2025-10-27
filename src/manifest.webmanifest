@@ -1,8 +1,8 @@
 {
   "name": "Profit",
   "short_name": "Profit",
-  "scope": "/",
-  "start_url": "/",
+  "scope": "/profit/",
+  "start_url": "/profit/",
   "theme_color": "#182630",
   "background_color": "#918f8f",
   "display": "standalone",
