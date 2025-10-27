@@ -2,7 +2,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Platform } from '@ionic/angular';
-import { SpotService } from 'src/app/services/spot.service';
+import { SpotCsvService } from 'src/app/services/spot-csv.service';
 import { CoinInterface } from 'src/app/classes/coin';
 
 @Component({
@@ -13,7 +13,7 @@ import { CoinInterface } from 'src/app/classes/coin';
 })
 export class ViewCoinPage implements OnInit {
   public coin!: CoinInterface;
-  private spotService = inject(SpotService);
+  private spotService = inject(SpotCsvService);
   private activatedRoute = inject(ActivatedRoute);
   private platform = inject(Platform);
 

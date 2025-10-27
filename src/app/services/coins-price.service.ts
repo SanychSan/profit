@@ -43,7 +43,7 @@ export class CoinsPriceService {
   private url = `${this.baseUrl}/market/tickers?category=spot`;
 
   coins = signal<SimplePrice | null>(null);
-  refreshMs = 15_000; // 15 seconds
+  refreshMs = 15_000_000; // 15 seconds
 
   private isVisible = signal<boolean>(true);
   private isActive = signal<boolean>(true);

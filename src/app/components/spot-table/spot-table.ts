@@ -12,7 +12,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 
 import { SpotTableSettingsService } from 'src/app/services/spot-table-settings.service';
-import { SpotService } from 'src/app/services/spot.service';
+import { SpotApiService } from 'src/app/services/spot-api.service';
 import { CoinInterface } from 'src/app/classes/coin';
 
 @Directive()
@@ -21,7 +21,7 @@ export abstract class SpotTable implements AfterViewInit, OnDestroy {
 
   private destroyRef: EffectRef;
   private cdr = inject(ChangeDetectorRef);
-  private spotService = inject(SpotService);
+  private spotService = inject(SpotApiService);
   public spotTableSettingsService = inject(SpotTableSettingsService);
 
   displayedColumns: string[] = [];

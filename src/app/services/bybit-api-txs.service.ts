@@ -4,6 +4,7 @@ import { catchError, throwError } from 'rxjs';
 
 import { StorageService } from 'src/app/services/storage.service';
 import { BybitAPITx } from 'src/app/types/transaction.type';
+import { encryptString, decryptString } from 'src/app/utils/crypto';
 
 interface Response<T> {
   result: T;
@@ -16,6 +17,12 @@ interface Response<T> {
 interface TransactionsLog {
   list: BybitAPITx[];
   nextPageCursor: string | null;
+}
+
+interface CryptoSecretKey {
+  ciphertext: string;
+  iv: string;
+  key: string;
 }
 
 @Injectable({
@@ -64,8 +71,13 @@ export class BybitAPITxsService {
     try {
       const apiKey = await this.storageService.get<string>('bybit_api_key');
       this.apiKey.set(apiKey || '');
-      const secretKey = await this.storageService.get<string>('bybit_secret_key');
-      this.secretKey.set(secretKey || '');
+      const cryptoSecretKey = await this.storageService.get<CryptoSecretKey>('bybit_secret_key');
+      const secretKey = await decryptString(
+        cryptoSecretKey!.ciphertext,
+        cryptoSecretKey!.iv,
+        cryptoSecretKey!.key
+      );
+      this.secretKey.set(secretKey);
       const data = await this.storageService.get<BybitAPITx[]>(this.STORAGE_KEY);
       this.txs.set(data || []);
     } catch (error) {}
@@ -135,11 +147,12 @@ export class BybitAPITxsService {
       });
   }
 
-  public setApiCredentials(apiKey: string, secretKey: string): void {
+  public async setApiCredentials(apiKey: string, secretKey: string): Promise<void> {
     this.apiKey.set(apiKey);
     this.secretKey.set(secretKey);
     this.storageService.set('bybit_api_key', apiKey);
-    this.storageService.set('bybit_secret_key', secretKey);
+    const encrypted = await encryptString(secretKey);
+    this.storageService.set('bybit_secret_key', encrypted);
   }
 
   private async hmacSHA256(message: string): Promise<string> {

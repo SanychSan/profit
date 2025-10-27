@@ -1,4 +1,4 @@
-import { BybitCSVTx } from 'src/app/types/transaction.type';
+import { BybitCSVTx, BybitAPITx } from 'src/app/types/transaction.type';
 import { Transaction as CoinTransaction } from 'src/app/classes/coin';
 
 export const bybitCsvTxToCoinTx = (tx: BybitCSVTx): CoinTransaction => {
@@ -11,3 +11,16 @@ export const bybitCsvTxToCoinTx = (tx: BybitCSVTx): CoinTransaction => {
     timestamp: new Date(tx['Timestamp (UTC)']).getTime()
   };
 };
+
+export const bybitApiTxToCoinTx = (tx: BybitAPITx): CoinTransaction => {
+  return {
+    id: tx.tradeId,
+    direction: tx.side.toLowerCase() === 'buy' ? 'BUY' : 'SELL',
+    qty: Math.abs(Number(tx.qty)),
+    price: Number(tx.tradePrice),
+    fees: Number(tx.fee),
+    timestamp: new Date(Number(tx.transactionTime)).getTime()
+  };
+};
+
+

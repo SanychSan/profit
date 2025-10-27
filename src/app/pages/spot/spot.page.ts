@@ -15,7 +15,7 @@ import { StatusBar } from '@capacitor/status-bar';
 import { Capacitor } from '@capacitor/core';
 import * as BIG from 'big.js';
 
-import { SpotService } from 'src/app/services/spot.service';
+import { SpotApiService } from 'src/app/services/spot-api.service';
 import { BybitCSVTxsService } from 'src/app/services/bybit-csv-txs.service';
 import { CoinsPriceService } from 'src/app/services/coins-price.service';
 import { SpotTableSettingsService } from 'src/app/services/spot-table-settings.service';
@@ -30,7 +30,7 @@ const { Big } = BIG;
   standalone: false
 })
 export class SpotPage implements AfterViewInit {
-  private spotService = inject(SpotService);
+  private spotService = inject(SpotApiService);
   public bybitCSVTxsService = inject(BybitCSVTxsService);
   public bybitAPITxsService = inject(BybitAPITxsService);
   private coinsPriceService = inject(CoinsPriceService);

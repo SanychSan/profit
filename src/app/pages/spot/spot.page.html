@@ -47,6 +47,10 @@
             label="Secret Key"
             labelPlacement="stacked"
             type="password"
+            autocomplete="new-password"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
             [value]="bybitAPITxsService.secretKey()"
             (change)="changeCredentials('secretKey', $event.target)"
           ></ion-input>

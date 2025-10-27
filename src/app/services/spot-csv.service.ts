@@ -5,12 +5,12 @@ import { BybitCSVTxsService } from './bybit-csv-txs.service';
 import { BybitCSVTx } from 'src/app/types/transaction.type';
 import { Coin } from 'src/app/classes/coin';
 import { ServiceState } from 'src/app/types/service-state.type';
-import { bybitCsvTxToCoinTx } from 'src/app/utils/bybit-csv-tx-to-coin-tx';
+import { bybitCsvTxToCoinTx } from 'src/app/utils/bybit-tx-to-coin-tx';
 
 @Injectable({
   providedIn: 'root'
 })
-export class SpotService {
+export class SpotCsvService {
   private coinsPriceService = inject(CoinsPriceService);
   private bybitCSVTxsService = inject(BybitCSVTxsService);
 
