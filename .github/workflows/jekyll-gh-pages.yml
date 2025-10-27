@@ -32,10 +32,11 @@ jobs:
 
       - name: Build
         run: npm run build
-        # очікується, що збірка покладе файли у ./www
 
       - name: Disable Jekyll (optional)
-        run: touch www/.nojekyll
+        run: |
+          touch www/.nojekyll
+          cp www/index.html www/404.html
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
