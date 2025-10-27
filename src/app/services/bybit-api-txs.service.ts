@@ -4,7 +4,7 @@ import { catchError, throwError } from 'rxjs';
 
 import { StorageService } from 'src/app/services/storage.service';
 import { BybitAPITx } from 'src/app/types/transaction.type';
-import { encryptString, decryptString } from 'src/app/utils/crypto';
+import { encryptString, decryptString, hmacSHA256 } from 'src/app/utils/crypto';
 
 interface Response<T> {
   result: T;
@@ -19,29 +19,25 @@ interface TransactionsLog {
   nextPageCursor: string | null;
 }
 
-interface CryptoSecretKey {
-  ciphertext: string;
-  iv: string;
-  key: string;
-}
+const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 
 @Injectable({
   providedIn: 'root'
 })
 export class BybitAPITxsService {
+  private readonly STORAGE_KEY = 'bybitApi';
   private http = inject(HttpClient);
-  private baseUrl = 'https://api.bybit.com/v5';
-  private readonly STORAGE_KEY = 'bybit_api_txs';
+  private baseUrl = 'https://api.bybit.com';
   private storageService = inject(StorageService);
 
-  public apiKey = signal('');
-  public secretKey = signal('');
+  public apiKey: WritableSignal<string> = signal('');
+  public apiKey2: WritableSignal<string> = signal('');
+  public lastUpdate: WritableSignal<null | number> = signal(null);
   public txs: WritableSignal<BybitAPITx[]> = signal([]);
 
-  isLoading = signal(false);
+  public isLoading = signal(false);
 
   constructor() {
-    // this.downloadMockData();
     this.init();
   }
 
@@ -69,31 +65,32 @@ export class BybitAPITxsService {
 
     // Load stored data
     try {
-      const apiKey = await this.storageService.get<string>('bybit_api_key');
-      this.apiKey.set(apiKey || '');
-      const cryptoSecretKey = await this.storageService.get<CryptoSecretKey>('bybit_secret_key');
-      const secretKey = await decryptString(
-        cryptoSecretKey!.ciphertext,
-        cryptoSecretKey!.iv,
-        cryptoSecretKey!.key
-      );
-      this.secretKey.set(secretKey);
-      const data = await this.storageService.get<BybitAPITx[]>(this.STORAGE_KEY);
-      this.txs.set(data || []);
+      const apiKey = (await this.storageService.get<string>(`${this.STORAGE_KEY}.apiKey`)) || '';
+      this.apiKey.set(apiKey);
+
+      const secretKeyEnc =
+        (await this.storageService.get<string>(`${this.STORAGE_KEY}.apiKey2`)) || '';
+      const secretKey = await decryptString(secretKeyEnc);
+      this.apiKey2.set(secretKey);
+
+      const lastUpdate =
+        (await this.storageService.get<number>(`${this.STORAGE_KEY}.lastUpdate`)) || null;
+      this.lastUpdate.set(lastUpdate);
+
+      const txs = (await this.storageService.get<BybitAPITx[]>(`${this.STORAGE_KEY}.txs`)) || [];
+      this.txs.set(txs);
     } catch (error) {}
   }
 
-  public async downloadData(
+  public async syncData(
     _endTime?: number,
     cursor?: string,
     allData: BybitAPITx[] = []
   ): Promise<void> {
     this.isLoading.set(true);
-    const url = `${this.baseUrl}/account/transaction-log`;
 
-    const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
     const endTime = _endTime || Date.now();
-    const startTime = endTime - sevenDaysMs;
+    const startTime = endTime - SEVEN_DAYS_MS;
     const limit = 50;
 
     const params = new URLSearchParams({
@@ -110,10 +107,10 @@ export class BybitAPITxsService {
     const timestamp = Date.now().toString();
     const recv_window = '5000';
     const sign = timestamp + this.apiKey() + recv_window + params.toString();
-    const sig = await this.hmacSHA256(sign);
+    const sig = await hmacSHA256(sign, this.apiKey2());
 
     this.http
-      .get<Response<TransactionsLog>>(url, {
+      .get<Response<TransactionsLog>>(`${this.baseUrl}/v5/account/transaction-log`, {
         params: new HttpParams({ fromString: params.toString() }),
         headers: {
           'X-BAPI-API-KEY': this.apiKey(),
@@ -129,47 +126,56 @@ export class BybitAPITxsService {
         })
       )
       .subscribe(res => {
-        console.log('%cbybit>', 'color:lime', res);
+        // console.log('%cbybit>', 'color:lime', res);
         if (res.retMsg === 'OK') {
           const data = [...allData, ...res.result.list];
+
           if (res.result.list.length === limit && res.result.nextPageCursor) {
-            this.downloadData(endTime, res.result.nextPageCursor, data);
-          } /* if (startTime > new Date('2025-10-01').getTime()) */ else {
-            this.downloadData(startTime, undefined, data);
-          } /*  else {
-            this.isLoading.set(false);
-            console.log('%cbybit>', 'color:lime', data);
-          } */
+            this.syncData(endTime, res.result.nextPageCursor, data);
+          } else if (this.lastUpdate()) {
+            if (startTime > (this.lastUpdate() as number)) {
+              this.syncData(startTime, undefined, data);
+            } else {
+              this.stopLoading(data);
+            }
+          } else {
+            this.syncData(startTime, undefined, data);
+          }
         } else {
-          this.isLoading.set(false);
-          console.log('%cbybit>', 'color:lime', allData);
+          this.stopLoading(allData);
         }
       });
   }
 
-  public async setApiCredentials(apiKey: string, secretKey: string): Promise<void> {
-    this.apiKey.set(apiKey);
-    this.secretKey.set(secretKey);
-    this.storageService.set('bybit_api_key', apiKey);
-    const encrypted = await encryptString(secretKey);
-    this.storageService.set('bybit_secret_key', encrypted);
+  private stopLoading(_data: BybitAPITx[]): void {
+    const data = [..._data]
+      .filter(
+        (obj, index, self) =>
+          index === self.findIndex(o => o.tradeId === obj.tradeId && o.symbol === obj.symbol)
+      )
+      .sort((a, b) => {
+        const t1 = a.tradeId;
+        const t2 = b.tradeId;
+        if (t1 < t2) return -1;
+        if (t1 > t2) return 1;
+        return 0;
+      });
+    this.txs.set(data);
+    this.storageService.set<BybitAPITx[]>(`${this.STORAGE_KEY}.txs`, data);
+    const now = Date.now();
+    this.lastUpdate.set(now);
+    this.storageService.set<number>(`${this.STORAGE_KEY}.lastUpdate`, now);
+    this.isLoading.set(false);
+    console.log('%cbybit>', 'color:lime', data);
   }
 
-  private async hmacSHA256(message: string): Promise<string> {
-    const enc = new TextEncoder();
-    const dec = new TextDecoder();
-    const key = await crypto.subtle.importKey(
-      'raw',
-      enc.encode(this.secretKey()),
-      { name: 'HMAC', hash: 'SHA-256' },
-      false,
-      ['sign']
-    );
+  public async setApiCredentials(apiKey: string, secretKey: string): Promise<void> {
+    await this.storageService.set<string>(`${this.STORAGE_KEY}.apiKey`, apiKey);
 
-    const signature = await crypto.subtle.sign('HMAC', key, enc.encode(message));
+    const encryptedSecretKey = await encryptString(secretKey);
+    await this.storageService.set<string>(`${this.STORAGE_KEY}.apiKey2`, encryptedSecretKey);
 
-    return Array.from(new Uint8Array(signature))
-      .map(b => b.toString(16).padStart(2, '0'))
-      .join('');
+    this.apiKey.set(apiKey);
+    this.apiKey2.set(secretKey);
   }
 }

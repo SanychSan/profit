@@ -71,8 +71,8 @@ export class BybitCSVTxsService {
         // const t1 = new Date(a['Timestamp (UTC)']).getTime();
         // const t2 = new Date(b['Timestamp (UTC)']).getTime();
         // return t2 - t1;
-        const t1 = `${a['Transaction ID']}`;
-        const t2 = `${b['Transaction ID']}`;
+        const t1 = a['Transaction ID'];
+        const t2 = b['Transaction ID'];
         if (t1 < t2) return -1;
         if (t1 > t2) return 1;
         return 0;

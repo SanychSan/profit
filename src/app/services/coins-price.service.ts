@@ -39,8 +39,7 @@ interface ApiResponse {
 export class CoinsPriceService {
   private http = inject(HttpClient);
   private destroyRef = inject(DestroyRef);
-  private baseUrl = 'https://api.bybit.com/v5';
-  private url = `${this.baseUrl}/market/tickers?category=spot`;
+  private baseUrl = 'https://api.bybit.com';
 
   coins = signal<SimplePrice | null>(null);
   refreshMs = 15_000_000; // 15 seconds
@@ -99,7 +98,7 @@ export class CoinsPriceService {
     }));
 
     this.http
-      .get<ApiResponse>(this.url)
+      .get<ApiResponse>(`${this.baseUrl}/v5/market/tickers?category=spot`)
       .pipe(
         retry({ count: 2, delay: 500 }),
         catchError(err => {

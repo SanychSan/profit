@@ -64,7 +64,7 @@ export class CoinsIconsService {
     }
 
     this.cachedCoinList = new Promise(resolve => {
-      console.log('Fetching coins list from coingecko...');
+      // console.log('Fetching coins list from coingecko...');
       this.http.get<CoinsData[]>('https://api.coingecko.com/api/v3/coins/list').subscribe(data => {
         // id: "ethereum-classic"
         // name: "Ethereum Classic"

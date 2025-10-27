@@ -44,7 +44,7 @@ export abstract class SpotTable implements AfterViewInit, OnDestroy {
           return true;
         });
 
-      console.log('SpotPage coins', this.spotSource.data);
+      // console.log('SpotPage coins', this.spotSource.data);
       this.cdr.markForCheck();
     });
   }

@@ -40,7 +40,7 @@ export class SpotPage implements AfterViewInit {
   public spotTableSettingsService = inject(SpotTableSettingsService);
 
   private apiKey = this.bybitAPITxsService.apiKey();
-  private secretKey = this.bybitAPITxsService.secretKey();
+  private apiKey2 = this.bybitAPITxsService.apiKey2();
   public hasChangesCredentials = signal(false);
 
   @ViewChild('fileInput', { static: false }) fileInput!: ElementRef<HTMLInputElement>;
@@ -116,11 +116,11 @@ export class SpotPage implements AfterViewInit {
   }
 
   downloadData() {
-    this.bybitAPITxsService.downloadData();
+    this.bybitAPITxsService.syncData();
     // this.bybitAPITxsService.downloadMockData();
   }
 
-  changeCredentials(type: 'apiKey' | 'secretKey', target: EventTarget | null) {
+  changeCredentials(type: 'apiKey' | 'apiKey2', target: EventTarget | null) {
     if (!(target instanceof HTMLInputElement)) {
       return;
     }
@@ -128,13 +128,14 @@ export class SpotPage implements AfterViewInit {
 
     if (type === 'apiKey') {
       this.apiKey = value;
-    } else if (type === 'secretKey') {
-      this.secretKey = value;
+    } else if (type === 'apiKey2') {
+      this.apiKey2 = value;
     }
     this.hasChangesCredentials.set(true);
   }
+
   updateCredentials() {
-    this.bybitAPITxsService.setApiCredentials(this.apiKey, this.secretKey);
+    this.bybitAPITxsService.setApiCredentials(this.apiKey, this.apiKey2);
     this.hasChangesCredentials.set(false);
   }
 }
