@@ -147,8 +147,10 @@ export class BybitAPITxsService {
       });
   }
 
-  private stopLoading(_data: BybitAPITx[]): void {
-    const data = [..._data]
+  private async stopLoading(_data: BybitAPITx[]): Promise<void> {
+    const storedData =
+      (await this.storageService.get<BybitAPITx[]>(`${this.STORAGE_KEY}.txs`)) || [];
+    const data = [..._data, ...storedData]
       .filter(
         (obj, index, self) =>
           index === self.findIndex(o => o.tradeId === obj.tradeId && o.symbol === obj.symbol)
@@ -166,7 +168,7 @@ export class BybitAPITxsService {
     this.lastUpdate.set(now);
     this.storageService.set<number>(`${this.STORAGE_KEY}.lastUpdate`, now);
     this.isLoading.set(false);
-    console.log('%cbybit>', 'color:lime', data);
+    // console.log('%cbybit>', 'color:lime', data);
   }
 
   public async setApiCredentials(apiKey: string, secretKey: string): Promise<void> {
