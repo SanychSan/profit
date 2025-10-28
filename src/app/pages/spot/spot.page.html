@@ -37,10 +37,7 @@
       <ion-title>
         @if(coins().length) {
         <ion-text
-          [ngClass]="{
-            'txt-color-positive': totalSpotProfit() > 0,
-            'txt-color-negative': totalSpotProfit() < 0
-          }"
+          color="{{totalSpotProfit() > 0 ? 'success' : totalSpotProfit() < 0 ? 'danger' : ''}}"
         >
           {{ totalSpotProfit() | currency:'USD':'symbol':'1.2-2' }}
         </ion-text>
