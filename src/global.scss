@@ -98,4 +98,10 @@ ion-header, ion-toolbar {
       justify-content: flex-end;
     }
   }
+  .mdc-data-table__header-cell.mat-column-profit {
+    padding-right: 8px;
+  }
+  .mdc-data-table__cell.mat-column-profit {
+    padding-right: 20px;
+  }
 }
