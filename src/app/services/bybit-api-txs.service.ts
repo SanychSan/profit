@@ -36,7 +36,7 @@ export class BybitAPITxsService {
   public txs: WritableSignal<BybitAPITx[]> = signal([]);
 
   public hasCredentials = computed(() => {
-    return this.apiKey() && this.apiKey2();
+    return !!this.apiKey() && !!this.apiKey2();
   });
 
   public isLoading = signal(false);
@@ -58,7 +58,7 @@ export class BybitAPITxsService {
     //   return 0;
     // });
     // this.txs.set(rawData || []);
-    // this.storageService.set(this.STORAGE_KEY, rawData);
+    // this.storageService.set(`${this.STORAGE_KEY}.txs`, rawData);
     // console.log('%cbybit mock>', 'color:orange', rawData);
     // this.isLoading.set(false);
 

@@ -6,7 +6,7 @@
   </ion-header>
 
   <ion-content>
-    <ion-list class="table-settings-list">
+    <ion-list class="mh-100">
       <ion-item>
         <ion-toggle
           [checked]="spotTableSettingsService.hideCoinsLessThanOneDollar()"
@@ -66,16 +66,11 @@
   </ion-header>
 
   <ion-content [fullscreen]="true">
-    <!-- <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
-      <ion-refresher-content></ion-refresher-content>
-    </ion-refresher> -->
-
-
-    @if(isHandset$ | async) {
+    @if(coins().length) { @if(isHandset$ | async) {
     <app-spot-table-mobile></app-spot-table-mobile>
     } @else {
     <app-spot-table-desktop></app-spot-table-desktop>
-    } @if(!coins().length) {
+    } } @else {
     <div class="no-data">
       @if(isLoading()) {
       <ion-spinner color="secondary"></ion-spinner>

@@ -1,22 +1,12 @@
-import {
-  Component,
-  inject,
-  ViewChild,
-  AfterViewInit,
-  ElementRef,
-  computed,
-  signal
-} from '@angular/core';
-import { toObservable } from '@angular/core/rxjs-interop';
-import { RefresherCustomEvent, Platform } from '@ionic/angular';
+import { Component, inject, computed } from '@angular/core';
+import { Platform } from '@ionic/angular';
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { map, shareReplay, filter, take } from 'rxjs/operators';
+import { map, shareReplay } from 'rxjs/operators';
 import { StatusBar } from '@capacitor/status-bar';
 import { Capacitor } from '@capacitor/core';
 import * as BIG from 'big.js';
 
 import { SpotApiService } from 'src/app/services/spot-api.service';
-import { BybitCSVTxsService } from 'src/app/services/bybit-csv-txs.service';
 import { CoinsPriceService } from 'src/app/services/coins-price.service';
 import { SpotTableSettingsService } from 'src/app/services/spot-table-settings.service';
 import { BybitAPITxsService } from 'src/app/services/bybit-api-txs.service';
@@ -29,33 +19,27 @@ const { Big } = BIG;
   styleUrls: ['spot.page.scss'],
   standalone: false
 })
-export class SpotPage implements AfterViewInit {
+export class SpotPage {
   private spotService = inject(SpotApiService);
-  public bybitCSVTxsService = inject(BybitCSVTxsService);
   public bybitAPITxsService = inject(BybitAPITxsService);
   private coinsPriceService = inject(CoinsPriceService);
   private bo = inject(BreakpointObserver);
   private platform: Platform = inject(Platform);
-  private coinsPriceServiceState$ = toObservable(this.coinsPriceService.state);
   public spotTableSettingsService = inject(SpotTableSettingsService);
 
-  public hasChangesCredentials = signal(false);
   public hasCredentials = this.bybitAPITxsService.hasCredentials;
-
-  @ViewChild('fileInput', { static: false }) fileInput!: ElementRef<HTMLInputElement>;
 
   isHandset$ = this.bo.observe(['(max-width: 767px)']).pipe(
     map(state => state.matches),
     shareReplay({ refCount: true, bufferSize: 1 })
   );
 
+  coins = this.spotService.coins;
+
   isLoading = computed(() => {
     const spotServiceState = this.spotService.state();
-    return !spotServiceState.ready && spotServiceState.loading;
-  });
-
-  coins = computed(() => {
-    return this.spotService.coins();
+    const coinsPriceServiceState = this.coinsPriceService.state();
+    return spotServiceState.loading || coinsPriceServiceState.loading;
   });
 
   totalSpotProfit = computed(() => {
@@ -69,31 +53,6 @@ export class SpotPage implements AfterViewInit {
         StatusBar.setOverlaysWebView({ overlay: false });
       }
     });
-  }
-
-  ngAfterViewInit() {
-    // this.coinsIconsService.getIcon('BTC').then(/* url => console.log('icon url', url) */);
-  }
-
-  refresh(ev: any) {
-    this.coinsPriceService.refresh();
-    this.coinsPriceServiceState$
-      .pipe(
-        map(s => s.loading),
-        filter(l => l === false),
-        take(1)
-      )
-      .subscribe(() => (ev as RefresherCustomEvent).detail.complete());
-  }
-
-  async onFileSelected(event: Event): Promise<void> {
-    const files = (event.target as HTMLInputElement).files;
-    if (!files || files.length === 0) {
-      return;
-    }
-
-    await this.bybitCSVTxsService.addTxFiles(files);
-    this.fileInput.nativeElement.value = '';
   }
 
   syncData() {

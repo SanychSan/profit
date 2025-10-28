@@ -79,7 +79,7 @@ ion-header, ion-toolbar {
     // font-family: Verdana, Geneva, Tahoma, sans-serif;
   }
   .mdc-data-table__cell {
-    font-weight: bold;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
   }
   .mdc-data-table__header-cell {
     background-color: rgba(0, 0, 0, 0.1);
@@ -99,9 +99,12 @@ ion-header, ion-toolbar {
     }
   }
   .mdc-data-table__header-cell.mat-column-profit {
-    padding-right: 8px;
+    padding-right: 7px;
   }
   .mdc-data-table__cell.mat-column-profit {
     padding-right: 20px;
   }
+}
+.mh-100 {
+  min-height: 100%;
 }
