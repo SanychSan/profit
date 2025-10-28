@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
+// import { IonText } from '@ionic/angular/standalone';
 
 import { CoinInterface } from 'src/app/classes/coin';
 import { SpotTable } from '../spot-table';

@@ -31,7 +31,7 @@
 <div class="ion-page" id="spot-content">
   <ion-header [translucent]="true">
     <ion-toolbar>
-      <ion-buttons>
+      <ion-buttons slot="start">
         <ion-menu-button></ion-menu-button>
       </ion-buttons>
       <ion-title>
@@ -66,9 +66,10 @@
   </ion-header>
 
   <ion-content [fullscreen]="true">
-    <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <!-- <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
       <ion-refresher-content></ion-refresher-content>
-    </ion-refresher>
+    </ion-refresher> -->
+
 
     @if(isHandset$ | async) {
     <app-spot-table-mobile></app-spot-table-mobile>
@@ -91,42 +92,5 @@
       }
     </div>
     }
-
-    <!-- <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-      <ion-fab-button class="float-btn" [disabled]="isLoading()">
-        <ion-icon name="menu"></ion-icon>
-      </ion-fab-button>
-
-      <ion-fab-list side="start">
-        <ion-fab-button color="secondary" [disabled]="isLoading()" (click)="openFilePicker()">
-          <ion-icon name="document-outline"></ion-icon>
-        </ion-fab-button>
-        <ion-fab-button
-          id="present-alert"
-          color="danger"
-          [disabled]="isLoading()"
-          [hidden]="!coins().length"
-        >
-          <ion-icon name="trash-outline"></ion-icon>
-        </ion-fab-button>
-      </ion-fab-list>
-    </ion-fab> -->
-
-    <!-- <ion-alert
-      trigger="present-alert"
-      header="Be Careful!"
-      subHeader="Are you sure you want to delete all spot transactions?"
-      message="This action cannot be undone."
-      [buttons]="alertButtons"
-    ></ion-alert> -->
   </ion-content>
 </div>
-
-<!-- <input
-  #fileInput
-  type="file"
-  accept=".csv,text/csv,application/csv,application/vnd.ms-excel,text/plain"
-  multiple
-  hidden
-  (change)="onFileSelected($event)"
-/> -->

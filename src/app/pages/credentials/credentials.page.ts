@@ -37,7 +37,9 @@ export class CredentialsPage implements OnDestroy {
     });
     this.destroyRef2 = effect(() => {
       const savedKey = this.bybitAPITxsService.apiKey2();
-      this.apiKey2Value.set(savedKey);
+      if (savedKey) {
+        this.apiKey2Value.set('******');
+      }
     });
   }
 

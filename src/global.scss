@@ -61,3 +61,41 @@ ion-header, ion-toolbar {
 .txt-color-negative {
   color: var(--ion-color-danger-tint);
 }
+
+.spot-table-mobile {
+  width: 100%;
+  margin-bottom: 50px;
+
+  .mat-mdc-header-row {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .mdc-data-table__cell,
+  .mdc-data-table__header-cell {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    // font-family: Verdana, Geneva, Tahoma, sans-serif;
+  }
+  .mdc-data-table__cell {
+    font-weight: bold;
+  }
+  .mdc-data-table__header-cell {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+  .mat-sort-header-content {
+    flex-direction: column;
+  }
+  .mat-column-profit,
+  .mat-column-price {
+    text-align: right;
+  }
+  .mdc-data-table__header-cell.mat-column-profit,
+  .mdc-data-table__header-cell.mat-column-price {
+    padding-right: 0;
+    .mat-sort-header-container {
+      justify-content: flex-end;
+    }
+  }
+}

@@ -1,5 +1,5 @@
 <table
-  class="spot-table"
+  class="spot-table-mobile"
   mat-table
   [dataSource]="spotSource"
   matSort
@@ -20,11 +20,11 @@
   <ng-container matColumnDef="price">
     <th mat-header-cell mat-sort-header *matHeaderCellDef>
       <div>
-        Price<br />
-        <small class="txt-gray">cur / buy</small>
+        Price<br/>
+        <small class="txt-gray ion-text-nowrap">cur / buy</small>
       </div>
     </th>
-    <td mat-cell *matCellDef="let r">
+    <td class="ion-text-end" mat-cell *matCellDef="let r">
       {{ r.marketPrice | currency : 'USD' : 'symbol' : '1.2-2' }}<br />
       {{ r.avgBuyPrice | currency : 'USD' : 'symbol' : '1.2-2' }}
     </td>
@@ -34,7 +34,7 @@
     <th mat-header-cell mat-sort-header *matHeaderCellDef>
       <div>
         Profit<br />
-        <small class="txt-gray">total / cur / cur%</small>
+        <small class="txt-gray ion-text-nowrap">total / cur / cur%</small>
       </div>
     </th>
     <td
