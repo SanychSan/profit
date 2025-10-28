@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
@@ -20,7 +21,8 @@ import { SpotTableMobileComponent } from 'src/app/components/spot-table/spot-tab
     SpotTableMobileComponent,
     SpotPageRoutingModule,
     MatTableModule,
-    MatSortModule
+    MatSortModule,
+    RouterModule
   ],
   declarations: [SpotPage]
 })

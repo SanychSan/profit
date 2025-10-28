@@ -1,4 +1,4 @@
-import { Injectable, inject, signal, WritableSignal } from '@angular/core';
+import { Injectable, inject, WritableSignal, signal, computed } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { catchError, throwError } from 'rxjs';
 
@@ -34,6 +34,10 @@ export class BybitAPITxsService {
   public apiKey2: WritableSignal<string> = signal('');
   public lastUpdate: WritableSignal<null | number> = signal(null);
   public txs: WritableSignal<BybitAPITx[]> = signal([]);
+
+  public hasCredentials = computed(() => {
+    return this.apiKey() && this.apiKey2();
+  });
 
   public isLoading = signal(false);
 
@@ -171,13 +175,22 @@ export class BybitAPITxsService {
     // console.log('%cbybit>', 'color:lime', data);
   }
 
-  public async setApiCredentials(apiKey: string, secretKey: string): Promise<void> {
+  public async setApiCredentials(apiKey: string, apiKey2: string): Promise<void> {
     await this.storageService.set<string>(`${this.STORAGE_KEY}.apiKey`, apiKey);
 
-    const encryptedSecretKey = await encryptString(secretKey);
-    await this.storageService.set<string>(`${this.STORAGE_KEY}.apiKey2`, encryptedSecretKey);
+    if (apiKey2) {
+      const encryptedSecretKey = await encryptString(apiKey2);
+      await this.storageService.set<string>(`${this.STORAGE_KEY}.apiKey2`, encryptedSecretKey);
+    }
 
     this.apiKey.set(apiKey);
-    this.apiKey2.set(secretKey);
+    this.apiKey2.set(apiKey2);
+  }
+
+  public async clearCredentials(): Promise<void> {
+    await this.storageService.remove(`${this.STORAGE_KEY}.apiKey`);
+    await this.storageService.remove(`${this.STORAGE_KEY}.apiKey2`);
+    this.apiKey.set('');
+    this.apiKey2.set('');
   }
 }

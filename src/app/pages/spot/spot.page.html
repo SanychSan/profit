@@ -1,76 +1,39 @@
-<ion-menu side="end" contentId="main-content">
+<ion-menu side="end" contentId="spot-content" menuId="spot-settings">
   <ion-header>
     <ion-toolbar>
-      <ion-title>Table Settings</ion-title>
+      <ion-title>Spot Settings</ion-title>
     </ion-toolbar>
   </ion-header>
 
   <ion-content>
     <ion-list class="table-settings-list">
-      <ion-item-group>
-        <ion-item-divider>
-          <ion-label>Table Settings</ion-label>
-        </ion-item-divider>
-        <ion-item>
-          <ion-toggle
-            [checked]="spotTableSettingsService.hideCoinsLessThanOneDollar()"
-            justify="space-between"
-            (ionChange)="spotTableSettingsService.hideCoinsLessThanOneDollar.set($event.detail.checked)"
-            >Hide coins less $1</ion-toggle
-          >
-        </ion-item>
-        <ion-item>
-          <ion-toggle
-            [checked]="spotTableSettingsService.hideZeroBuyCoins()"
-            justify="space-between"
-            helperText="Hide coins which you haven't bought. For example coins from staking or airdrop"
-            (ionChange)="spotTableSettingsService.hideZeroBuyCoins.set($event.detail.checked)"
-            >Hide zero buy coins</ion-toggle
-          >
-        </ion-item>
-      </ion-item-group>
-
-      <ion-item-group>
-        <ion-item-divider>
-          <ion-label>Credentials</ion-label>
-        </ion-item-divider>
-        <ion-item>
-          <ion-input
-            label="API Key"
-            labelPlacement="stacked"
-            [value]="bybitAPITxsService.apiKey()"
-            (change)="changeCredentials('apiKey', $event.target)"
-          ></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-input
-            label="Secret Key"
-            labelPlacement="stacked"
-            type="password"
-            autocomplete="new-password"
-            autocorrect="off"
-            autocapitalize="off"
-            spellcheck="false"
-            [value]="bybitAPITxsService.apiKey2()"
-            (change)="changeCredentials('apiKey2', $event.target)"
-          ></ion-input>
-        </ion-item>
-        <div class="ion-padding-horizontal">
-          <ion-button
-            expand="block"
-            [disabled]="!hasChangesCredentials()"
-            (click)="updateCredentials()"
-            >Update credentials</ion-button
-          >
-        </div>
-      </ion-item-group>
+      <ion-item>
+        <ion-toggle
+          [checked]="spotTableSettingsService.hideCoinsLessThanOneDollar()"
+          justify="space-between"
+          (ionChange)="spotTableSettingsService.hideCoinsLessThanOneDollar.set($event.detail.checked)"
+          >Hide coins less $1</ion-toggle
+        >
+      </ion-item>
+      <ion-item>
+        <ion-toggle
+          [checked]="spotTableSettingsService.hideZeroBuyCoins()"
+          justify="space-between"
+          helperText="Hide coins which you haven't bought. For example coins from staking or airdrop"
+          (ionChange)="spotTableSettingsService.hideZeroBuyCoins.set($event.detail.checked)"
+          >Hide zero buy coins</ion-toggle
+        >
+      </ion-item>
     </ion-list>
   </ion-content>
 </ion-menu>
 
-<div class="ion-page" id="main-content">
+<div class="ion-page" id="spot-content">
   <ion-header [translucent]="true">
     <ion-toolbar>
+      <ion-buttons>
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
       <ion-title>Spot</ion-title>
       @if(coins().length) {
       <ion-text
@@ -84,20 +47,22 @@
         {{ totalSpotProfit() | currency:'USD':'symbol':'1.2-2' }}
       </ion-text>
       }
-      <ion-buttons slot="primary">
-        <ion-menu-toggle>
-          <ion-button fill="clear">
-            <ion-icon name="settings-outline"></ion-icon>
+      @if (hasCredentials()) {
+        <ion-buttons slot="primary">
+          <ion-menu-toggle menu="spot-settings">
+            <ion-button fill="clear">
+              <ion-icon slot="icon-only" name="settings-outline"></ion-icon>
+            </ion-button>
+          </ion-menu-toggle>
+          <ion-button fill="clear" (click)="syncData()">
+            @if (bybitAPITxsService.isLoading()) {
+            <ion-icon slot="icon-only" class="rotate" name="sync-outline"></ion-icon>
+            } @else {
+            <ion-icon slot="icon-only" name="cloud-download-outline"></ion-icon>
+            }
           </ion-button>
-        </ion-menu-toggle>
-        <ion-button fill="clear" (click)="downloadData()">
-          @if (bybitAPITxsService.isLoading()) {
-          <ion-icon class="rotate" name="sync-outline"></ion-icon>
-          } @else {
-          <ion-icon name="cloud-download-outline"></ion-icon>
-          }
-        </ion-button>
-      </ion-buttons>
+        </ion-buttons>
+      }
     </ion-toolbar>
   </ion-header>
 
@@ -105,12 +70,6 @@
     <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
       <ion-refresher-content></ion-refresher-content>
     </ion-refresher>
-
-    <ion-header collapse="condense">
-      <ion-toolbar>
-        <ion-title>Spot</ion-title>
-      </ion-toolbar>
-    </ion-header>
 
     @if(isHandset$ | async) {
     <app-spot-table-mobile></app-spot-table-mobile>
@@ -120,13 +79,21 @@
     <div class="no-data">
       @if(isLoading()) {
       <ion-spinner color="secondary"></ion-spinner>
+      } @else if(hasCredentials()) {
+      <ion-button (click)="syncData()">
+        Get Data @if (bybitAPITxsService.isLoading()) {
+        <ion-icon slot="end" class="rotate" name="sync-outline"></ion-icon>
+        } @else {
+        <ion-icon slot="end" name="cloud-download-outline"></ion-icon>
+        }
+      </ion-button>
       } @else {
-      <p>No data available. Please upload a CSV file.</p>
+      <ion-button routerLink="/credentials">Set Credentials</ion-button>
       }
     </div>
     }
 
-    <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <!-- <ion-fab slot="fixed" vertical="bottom" horizontal="end">
       <ion-fab-button class="float-btn" [disabled]="isLoading()">
         <ion-icon name="menu"></ion-icon>
       </ion-fab-button>
@@ -144,23 +111,23 @@
           <ion-icon name="trash-outline"></ion-icon>
         </ion-fab-button>
       </ion-fab-list>
-    </ion-fab>
+    </ion-fab> -->
 
-    <ion-alert
+    <!-- <ion-alert
       trigger="present-alert"
       header="Be Careful!"
       subHeader="Are you sure you want to delete all spot transactions?"
       message="This action cannot be undone."
       [buttons]="alertButtons"
-    ></ion-alert>
+    ></ion-alert> -->
   </ion-content>
 </div>
 
-<input
+<!-- <input
   #fileInput
   type="file"
   accept=".csv,text/csv,application/csv,application/vnd.ms-excel,text/plain"
   multiple
   hidden
   (change)="onFileSelected($event)"
-/>
+/> -->

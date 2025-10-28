@@ -39,9 +39,8 @@ export class SpotPage implements AfterViewInit {
   private coinsPriceServiceState$ = toObservable(this.coinsPriceService.state);
   public spotTableSettingsService = inject(SpotTableSettingsService);
 
-  private apiKey = this.bybitAPITxsService.apiKey();
-  private apiKey2 = this.bybitAPITxsService.apiKey2();
   public hasChangesCredentials = signal(false);
+  public hasCredentials = this.bybitAPITxsService.hasCredentials;
 
   @ViewChild('fileInput', { static: false }) fileInput!: ElementRef<HTMLInputElement>;
 
@@ -63,20 +62,6 @@ export class SpotPage implements AfterViewInit {
     const coins = this.spotService.coins();
     return coins.reduce((sum, c) => new Big(sum).plus(c.totalProfit || 0).toNumber(), 0);
   });
-
-  public alertButtons = [
-    {
-      text: 'Yes, delete',
-      role: 'confirm',
-      handler: () => {
-        this.bybitCSVTxsService.removeAllData();
-      }
-    },
-    {
-      text: 'Cancel',
-      role: 'cancel'
-    }
-  ];
 
   constructor() {
     this.platform.ready().then(() => {
@@ -101,10 +86,6 @@ export class SpotPage implements AfterViewInit {
       .subscribe(() => (ev as RefresherCustomEvent).detail.complete());
   }
 
-  openFilePicker() {
-    this.fileInput.nativeElement.click();
-  }
-
   async onFileSelected(event: Event): Promise<void> {
     const files = (event.target as HTMLInputElement).files;
     if (!files || files.length === 0) {
@@ -115,27 +96,10 @@ export class SpotPage implements AfterViewInit {
     this.fileInput.nativeElement.value = '';
   }
 
-  downloadData() {
-    this.bybitAPITxsService.syncData();
-    // this.bybitAPITxsService.downloadMockData();
-  }
-
-  changeCredentials(type: 'apiKey' | 'apiKey2', target: EventTarget | null) {
-    if (!(target instanceof HTMLInputElement)) {
+  syncData() {
+    if (this.bybitAPITxsService.isLoading()) {
       return;
     }
-    const value = target.value.trim();
-
-    if (type === 'apiKey') {
-      this.apiKey = value;
-    } else if (type === 'apiKey2') {
-      this.apiKey2 = value;
-    }
-    this.hasChangesCredentials.set(true);
-  }
-
-  updateCredentials() {
-    this.bybitAPITxsService.setApiCredentials(this.apiKey, this.apiKey2);
-    this.hasChangesCredentials.set(false);
+    this.bybitAPITxsService.syncData();
   }
 }

@@ -1,0 +1,18 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons>
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Home</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  @if (!hasCredentials()) {
+  <div
+    class="ion-align-items-center ion-justify-content-center ion-flex-column ion-display-flex mh-100"
+  >
+    <ion-button routerLink="/credentials">Set Credentials</ion-button>
+  </div>
+  }
+</ion-content>
