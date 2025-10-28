@@ -34,34 +34,33 @@
       <ion-buttons>
         <ion-menu-button></ion-menu-button>
       </ion-buttons>
-      <ion-title>Spot</ion-title>
-      @if(coins().length) {
-      <ion-text
-        class="ion-padding-end text-bold text-xl"
-        [ngClass]="{
-          'txt-color-positive': totalSpotProfit() > 0,
-          'txt-color-negative': totalSpotProfit() < 0
-        }"
-        slot="secondary"
-      >
-        {{ totalSpotProfit() | currency:'USD':'symbol':'1.2-2' }}
-      </ion-text>
-      }
+      <ion-title>
+        @if(coins().length) {
+        <ion-text
+          [ngClass]="{
+            'txt-color-positive': totalSpotProfit() > 0,
+            'txt-color-negative': totalSpotProfit() < 0
+          }"
+        >
+          {{ totalSpotProfit() | currency:'USD':'symbol':'1.2-2' }}
+        </ion-text>
+        } @else { Spot }
+      </ion-title>
       @if (hasCredentials()) {
-        <ion-buttons slot="primary">
-          <ion-menu-toggle menu="spot-settings">
-            <ion-button fill="clear">
-              <ion-icon slot="icon-only" name="settings-outline"></ion-icon>
-            </ion-button>
-          </ion-menu-toggle>
-          <ion-button fill="clear" (click)="syncData()">
-            @if (bybitAPITxsService.isLoading()) {
-            <ion-icon slot="icon-only" class="rotate" name="sync-outline"></ion-icon>
-            } @else {
-            <ion-icon slot="icon-only" name="cloud-download-outline"></ion-icon>
-            }
+      <ion-buttons slot="primary">
+        <ion-menu-toggle menu="spot-settings">
+          <ion-button fill="clear">
+            <ion-icon slot="icon-only" name="settings-outline"></ion-icon>
           </ion-button>
-        </ion-buttons>
+        </ion-menu-toggle>
+        <ion-button fill="clear" (click)="syncData()">
+          @if (bybitAPITxsService.isLoading()) {
+          <ion-icon slot="icon-only" class="rotate" name="sync-outline"></ion-icon>
+          } @else {
+          <ion-icon slot="icon-only" name="cloud-download-outline"></ion-icon>
+          }
+        </ion-button>
+      </ion-buttons>
       }
     </ion-toolbar>
   </ion-header>

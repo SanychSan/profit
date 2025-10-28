@@ -1,5 +1,4 @@
-import { Component, inject } from '@angular/core';
-import { SwUpdate } from '@angular/service-worker';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -7,16 +6,4 @@ import { SwUpdate } from '@angular/service-worker';
   styleUrls: ['app.component.scss'],
   standalone: false
 })
-export class AppComponent {
-  private swUpdate = inject(SwUpdate);
-
-  constructor() {
-    this.swUpdate.versionUpdates.subscribe(e => {
-      console.log('SW Update event:', e);
-      if (e.type === 'VERSION_READY') {
-        // reload for get new version
-        location.reload();
-      }
-    });
-  }
-}
+export class AppComponent {}
